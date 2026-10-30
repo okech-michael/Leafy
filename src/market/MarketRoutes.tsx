@@ -54,7 +54,7 @@ export function MarketRoutes() {
         <div className="px-4 pb-3 lg:hidden"><MarketSearch /></div>
         {mobileMenu && <nav className="grid gap-3 border-t border-[#e6eae5] bg-white px-4 py-4 text-sm lg:hidden"><Link to="/market/products" onClick={() => setMobileMenu(false)}>Shop all products</Link><Link to="/market/stores" onClick={() => setMobileMenu(false)}>Seller stores</Link><Link to="/market/wishlist" onClick={() => setMobileMenu(false)}>Wishlist</Link><Link to="/market/cart" onClick={() => setMobileMenu(false)}>Cart ({cartItemCount(state.cart)})</Link><Link to="/market/account" onClick={() => setMobileMenu(false)}>My account & orders</Link><Link to="/market/seller/apply" onClick={() => setMobileMenu(false)}>Become a seller</Link></nav>}
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1600px] px-4 py-7 sm:px-6 lg:px-8">
         <Routes>
           <Route index element={<MarketHome state={state} update={update} />} />
           <Route path="products" element={<ProductCatalogue state={state} update={update} />} />
@@ -129,10 +129,10 @@ function MarketHome({ state, update }: { state: MarketState; update: UpdateMarke
     <section className="relative isolate overflow-hidden rounded-[2rem] bg-[#202923] text-white">
       <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=2000&q=85" alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-45" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#15231d]/90 via-[#15231d]/60 to-transparent" />
-      <div className="max-w-3xl px-6 py-20 sm:px-12 sm:py-28">
+      <div className="w-full max-w-[1400px] px-6 py-20 sm:px-12 sm:py-28">
         <p className="text-xs font-semibold uppercase tracking-[.28em] text-[#A4C68C]">The Leafy marketplace</p>
-        <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-[-.04em] sm:text-6xl">Good things, grown and made with care.</h1>
-        <p className="mt-5 max-w-xl text-base leading-7 text-white/85">Discover seasonal produce, thoughtful pantry goods and independent Kenyan makers in one considered marketplace.</p>
+        <h1 className="mt-5 max-w-5xl text-4xl font-semibold leading-tight tracking-[-.04em] sm:text-6xl">Good things, grown and made with care.</h1>
+        <p className="mt-5 max-w-4xl text-base leading-7 text-white/85">Discover seasonal produce, thoughtful pantry goods and independent Kenyan makers in one considered marketplace.</p>
         <div className="mt-8 flex flex-wrap gap-3"><Link to="/market/products" className="rounded-full bg-[#A4C68C] px-6 py-3 text-sm font-semibold text-[#202923]">Explore products <ArrowRight className="ml-1 inline h-4 w-4" /></Link><Link to="/market#categories" className="rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white">Shop by category</Link></div>
       </div>
     </section>
@@ -678,7 +678,7 @@ function AccountStat({ label, value }: { label: string; value: string }) {
 
 function StatusChip({ value }: { value: string }) {
   const positive = ['Paid', 'Delivered', 'Successful', 'Approved', 'active', 'published'].includes(value)
-  return <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${positive ? 'bg-[#EDF4EA] text-[#285342]' : ['Failed', 'Rejected', 'Cancelled', 'Out of stock'].includes(value) ? 'bg-[#fff0eb] text-[#9b422b]' : 'bg-[#fff4e8] text-[#79501c]'}`}>{value}</span>
+  return <span className={`text-xs font-medium ${positive ? 'text-[#285342]' : ['Failed', 'Rejected', 'Cancelled', 'Out of stock'].includes(value) ? 'text-[#9b422b]' : 'text-[#79501c]'}`}>{value}</span>
 }
 
 function MarketFooter() {
