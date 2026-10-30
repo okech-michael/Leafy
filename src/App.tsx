@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import heroVideoSrc from './assets/leafy-brand-intro-silent.mp4'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -32,6 +33,9 @@ import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNaviga
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
+const FarmsRoutes = lazy(() => import('./farms/FarmsRoutes').then((module) => ({ default: module.FarmsRoutes })))
+const FoodsRoutes = lazy(() => import('./foods/FoodsRoutes').then((module) => ({ default: module.FoodsRoutes })))
+const FoundationRoutes = lazy(() => import('./foundation/FoundationRoutes').then((module) => ({ default: module.FoundationRoutes })))
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -119,6 +123,9 @@ function AppShell() {
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const isMarketRoute = location.pathname.startsWith('/market')
+  const isFarmsRoute = location.pathname.startsWith('/farms')
+  const isFoodsRoute = location.pathname.startsWith('/foods')
+  const isFoundationRoute = location.pathname.startsWith('/foundation')
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -126,7 +133,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-      {!isMarketRoute && <header className="sticky top-0 z-50 border-b border-[#E6EAE5] bg-[#F6F5EF]/90 backdrop-blur-xl">
+      {!isMarketRoute && !isFarmsRoute && !isFoodsRoute && !isFoundationRoute && <header className="sticky top-0 z-50 border-b border-[#E6EAE5] bg-[#F6F5EF]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <NavLink to="/" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white shadow-lg shadow-[#285342]/20">
@@ -192,12 +199,13 @@ function AppShell() {
           <Route path="/employee" element={<EmployeePortalPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/division/market" element={<Navigate to="/market" replace />} />
+          <Route path="/division/farms" element={<Navigate to="/farms" replace />} />
           <Route path="/division/:divisionId" element={<DivisionPage />} />
-          <Route path="/foods" element={<DivisionExperiencePage divisionId="foods" />} />
-          <Route path="/farms" element={<DivisionExperiencePage divisionId="farms" />} />
+          <Route path="/foods/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foods…</div>}><FoodsRoutes /></Suspense>} />
+          <Route path="/farms/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Farms…</div>}><FarmsRoutes /></Suspense>} />
           <Route path="/academy" element={<DivisionExperiencePage divisionId="academy" />} />
           <Route path="/academy/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Academy…</div>}><AcademyRoutes /></Suspense>} />
-          <Route path="/foundation" element={<DivisionExperiencePage divisionId="foundation" />} />
+          <Route path="/foundation/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foundation…</div>}><FoundationRoutes /></Suspense>} />
           <Route path="/market/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Market…</div>}><MarketRoutes /></Suspense>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -330,7 +338,7 @@ function EmployeePortalPage() {
             {['Leafy Foods', 'Leafy Academy', 'Leafy Market'].map((item) => (
               <div key={item} className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm text-[#202923]">
                 <span>{item}</span>
-                <span className="rounded-full bg-[#EDF4EA] px-2.5 py-1 text-xs font-medium text-[#285342]">Authorised</span>
+                <span className="text-xs font-medium text-[#285342]">Authorised</span>
               </div>
             ))}
           </div>
@@ -395,7 +403,6 @@ function EmailVerificationPage() {
 }
 
 function LandingPage() {
-  const heroVideoSrc = '/assets/leafy-hero-video.mp4'
   const heroRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -434,6 +441,7 @@ function LandingPage() {
           muted
           loop
           playsInline
+          aria-hidden="true"
           poster="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80"
         >
           <source src={heroVideoSrc} type="video/mp4" />
@@ -441,15 +449,12 @@ function LandingPage() {
 
         <div className="absolute inset-0 bg-[#202923]/60" />
 
-        <div className="relative mx-auto flex min-h-[90vh] max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
-          <div className="hero-copy max-w-3xl">
-            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-5 inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-[#EAF4ED]">
-              A BETTER FUTURE STARTS WITH US
-            </motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="max-w-4xl text-5xl font-semibold leading-[0.96] tracking-[-0.06em] sm:text-6xl lg:text-8xl">
+        <div className="relative mx-auto flex min-h-[90vh] w-full max-w-[1600px] items-center px-5 py-20 sm:px-8 lg:px-16">
+          <div className="hero-copy w-full max-w-[1450px]">
+            <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1450px] text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl lg:text-7xl">
               Nourishing People. Restoring Nature. Building a Better Tomorrow.
             </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="mt-6 max-w-xl text-base text-[#F3F7F4]/85 sm:text-lg">
+            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="mt-6 max-w-4xl text-base leading-7 text-[#F3F7F4]/85 sm:text-lg sm:leading-8">
               Leafy brings together healthy living, sustainable agriculture, education, community empowerment and responsible commerce to create meaningful impact for people and the planet.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -468,11 +473,11 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
-        <div className="story-panel grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+      <section className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
+        <div className="story-panel grid gap-10 lg:grid-cols-[1.25fr_.75fr] lg:items-center">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Introducing Leafy</p>
-            <h2 className="max-w-md text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One organisation. Five powerful pathways to healthier living.</h2>
+            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One organisation. Five powerful pathways to healthier living.</h2>
           </div>
           <div className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_40px_80px_rgba(32,41,35,0.08)]">
             <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80" alt="People collaborating in a community-oriented setting" className="h-[460px] w-full object-cover transition duration-700 hover:scale-105" />
@@ -480,7 +485,7 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-[1600px] px-5 pb-20 sm:px-8 lg:px-16">
         <div className="mb-10 flex items-end justify-between gap-3">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">The Leafy Ecosystem</p>
@@ -514,13 +519,13 @@ function LandingPage() {
       </section>
 
       <section className="bg-[#202923] py-24 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-16">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end">
             <div>
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Our Mission</p>
-              <h2 className="max-w-xl text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Healthy People. Healthy Communities. Healthy Planet.</h2>
+              <h2 className="text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Healthy People. Healthy Communities. Healthy Planet.</h2>
             </div>
-            <p className="max-w-lg text-base leading-7 text-[#DCE8E1]">
+            <p className="text-base leading-7 text-[#DCE8E1]">
               Leafy connects the full cycle of wellbeing — from the soil and food we grow, to the people we educate, the communities we support and the responsible choices we make together.
             </p>
           </div>
@@ -535,7 +540,7 @@ function LandingPage() {
         </div>
       </section>
 
-      <section id="impact" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <section id="impact" className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
         <div className="mb-12 max-w-2xl">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Our impact</p>
           <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Built around meaningful, human-centred outcomes.</h2>
@@ -563,16 +568,12 @@ function LandingPage() {
             </div>
             <div className="rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-8">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#285342]">Our approach</p>
-              <div className="mt-6 flex flex-wrap gap-3 text-sm font-medium text-[#202923]">
-                <span className="rounded-full bg-white px-3 py-2">People</span>
-                <ArrowRight className="h-4 w-4 self-center text-[#39845A]" />
-                <span className="rounded-full bg-white px-3 py-2">Agriculture</span>
-                <ArrowRight className="h-4 w-4 self-center text-[#39845A]" />
-                <span className="rounded-full bg-white px-3 py-2">Education</span>
-                <ArrowRight className="h-4 w-4 self-center text-[#39845A]" />
-                <span className="rounded-full bg-white px-3 py-2">Community</span>
-                <ArrowRight className="h-4 w-4 self-center text-[#39845A]" />
-                <span className="rounded-full bg-white px-3 py-2">Marketplace</span>
+              <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium text-[#202923] sm:text-base">
+                <span>People</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
+                <span>Agriculture</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
+                <span>Education</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
+                <span>Community</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
+                <span>Marketplace</span>
               </div>
             </div>
           </div>
@@ -580,7 +581,7 @@ function LandingPage() {
       </section>
 
       <section className="bg-[#F0F5EF] py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-16">
           <div className="mb-12 flex items-center justify-between gap-4">
             <div>
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Featured stories</p>
@@ -602,7 +603,7 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
         <div className="rounded-[2.5rem] bg-[#285342] px-6 py-10 text-white sm:px-10 lg:px-12">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
