@@ -594,7 +594,7 @@ function PreferenceRow({ title, detail, checked, onChange }: { title: string; de
 
 function StatusPill({ value }: { value: string }) {
   const positive = ['Passed', 'Graded', 'Submitted'].includes(value)
-  return <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${positive ? 'bg-[#EDF4EA] text-[#285342]' : value === 'Late' || value === 'Pending Review' ? 'bg-[#fff4e8] text-[#7b4a1b]' : 'bg-[#F0F1EE] text-[#5d655f]'}`}>{value}</span>
+  return <span className={`text-xs font-medium ${positive ? 'text-[#285342]' : value === 'Late' || value === 'Pending Review' ? 'text-[#7b4a1b]' : 'text-[#5d655f]'}`}>{value}</span>
 }
 
 function initials(name: string) {
