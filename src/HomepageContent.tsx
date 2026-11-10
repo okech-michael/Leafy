@@ -392,12 +392,14 @@ export function HomepageContent() {
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#0B3D2E]">Information and support</h2>
             <ul className="mt-4 space-y-3 text-sm text-[#4B5E56]">
+              <li><a className="hover:text-[#0B3D2E] hover:underline" href="tel:+254746593987">Call 0746 593 987</a></li>
+              <li><a className="hover:text-[#0B3D2E] hover:underline" href="mailto:info@leafyinnovations.com">info@leafyinnovations.com</a></li>
               <li><Link className="hover:text-[#0B3D2E] hover:underline" to="/foundation/contact">Foundation contact page</Link></li>
               <li><Link className="hover:text-[#0B3D2E] hover:underline" to="/foods/support">Foods customer support</Link></li>
               <li><Link className="hover:text-[#0B3D2E] hover:underline" to="/foundation/privacy">Foundation privacy notice</Link></li>
               <li><Link className="hover:text-[#0B3D2E] hover:underline" to="/foundation/terms">Foundation website terms</Link></li>
             </ul>
-            <p className="mt-4 text-xs leading-5 text-[#4B5E56]">These contact and legal pages describe prototype features; official contact details and approved policies are not yet configured.</p>
+            <p className="mt-4 text-xs leading-5 text-[#4B5E56]">Contact forms and legal pages describe prototype features; approved policies are not yet configured.</p>
           </div>
         </div>
         <div className="border-t border-[#DFE7DF]">
