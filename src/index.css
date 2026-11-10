@@ -62,6 +62,21 @@ input {
   font: inherit;
 }
 
+.public-nav-trigger {
+  color: #53645A;
+  font-size: 17px;
+  font-weight: 550;
+}
+
+.public-nav-trigger:hover,
+.public-nav-trigger[data-active='true'] {
+  color: #245B45;
+}
+
+.public-nav-trigger[data-active='true'] {
+  font-weight: 600;
+}
+
 ::selection {
   background: rgba(40, 83, 66, 0.12);
 }

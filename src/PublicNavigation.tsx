@@ -9,8 +9,8 @@ const exploreLinks = [
 ]
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-2 ${
-    isActive ? 'text-[#285342]' : 'text-[#536057] hover:text-[#285342]'
+  `whitespace-nowrap rounded-full px-3 py-2 text-[17px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2 ${
+    isActive ? 'font-[600] text-[#245B45]' : 'font-[550] text-[#53645A] hover:text-[#245B45]'
   }`
 
 export function PublicNavigation() {
@@ -63,12 +63,12 @@ export function PublicNavigation() {
           end
           onClick={closeMenus}
           aria-label="Leafy home"
-          className="flex shrink-0 items-center gap-2.5 rounded-lg text-[#202923] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-4"
+          className="flex shrink-0 items-center gap-2.5 rounded-lg text-[#26372F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#285342] text-white">
             <Leaf className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
-          <span className="text-[19px] font-semibold tracking-[-0.04em]">Leafy</span>
+          <span className="text-[23px] font-[650] tracking-[-0.04em]">Leafy</span>
         </NavLink>
 
         <div className="hidden items-center gap-1 xl:flex">
@@ -79,10 +79,9 @@ export function PublicNavigation() {
               type="button"
               aria-expanded={exploreOpen}
               aria-controls="public-explore-menu"
+              data-active={isExploring || exploreOpen}
               onClick={() => setExploreOpen((open) => !open)}
-              className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-2 ${
-                isExploring || exploreOpen ? 'text-[#285342]' : 'text-[#536057] hover:text-[#285342]'
-              }`}
+              className="public-nav-trigger inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2"
             >
               Explore
               <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${exploreOpen ? 'rotate-180' : ''}`} />
@@ -99,8 +98,8 @@ export function PublicNavigation() {
                     onClick={closeMenus}
                     className={({ isActive }) => `block rounded-xl px-4 py-3 transition-colors hover:bg-[#F3F6F1] focus-visible:bg-[#F3F6F1] focus-visible:outline-none ${isActive ? 'bg-[#F3F6F1]' : ''}`}
                   >
-                    <span className="block text-sm font-semibold text-[#202923]">{label}</span>
-                    <span className="mt-0.5 block text-xs text-[#6B756E]">{detail}</span>
+                    <span className="block text-base font-semibold text-[#26372F]">{label}</span>
+                    <span className="mt-0.5 block text-sm text-[#53645A]">{detail}</span>
                   </NavLink>
                 ))}
               </div>
@@ -112,10 +111,10 @@ export function PublicNavigation() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-5 xl:flex">
-          <NavLink to="/auth/login" className="whitespace-nowrap text-sm font-medium text-[#536057] transition-colors hover:text-[#285342] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-4">
+          <NavLink to="/auth/login" className="whitespace-nowrap text-base font-[550] text-[#53645A] transition-colors hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4">
             Sign in
           </NavLink>
-          <NavLink to="/auth/register" className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full bg-[#285342] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-2">
+          <NavLink to="/auth/register" className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">
             Join Leafy
           </NavLink>
         </div>
@@ -123,7 +122,7 @@ export function PublicNavigation() {
         <button
           ref={mobileMenuButtonRef}
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#DCE4DC] text-[#285342] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-2 xl:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#DCE4DC] text-[#245B45] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2 xl:hidden"
           aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={mobileOpen}
           aria-controls="public-mobile-menu"
@@ -141,8 +140,9 @@ export function PublicNavigation() {
               type="button"
               aria-expanded={mobileExploreOpen}
               aria-controls="public-mobile-explore"
+              data-active={isExploring || mobileExploreOpen}
               onClick={() => setMobileExploreOpen((open) => !open)}
-              className="flex w-full items-center justify-between rounded-full px-3 py-2 text-left text-sm font-medium text-[#536057] transition-colors hover:bg-white hover:text-[#285342] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A]"
+              className="public-nav-trigger flex w-full items-center justify-between rounded-full px-3 py-2 text-left transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45]"
             >
               Explore
               <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileExploreOpen ? 'rotate-180' : ''}`} />
@@ -158,10 +158,10 @@ export function PublicNavigation() {
             <NavLink to="/destination" onClick={closeMenus} className={navLinkClass}>Opportunities</NavLink>
             <NavLink to="/about" onClick={closeMenus} className={navLinkClass}>About Leafy</NavLink>
             <div className="mt-3 flex items-center gap-3 border-t border-[#E6EAE5] pt-4">
-              <NavLink to="/auth/login" onClick={closeMenus} className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-medium text-[#536057] hover:text-[#285342] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A]">
+              <NavLink to="/auth/login" onClick={closeMenus} className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-base font-[550] text-[#53645A] hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45]">
                 Sign in
               </NavLink>
-              <NavLink to="/auth/register" onClick={closeMenus} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#285342] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#39845A] focus-visible:ring-offset-2">
+              <NavLink to="/auth/register" onClick={closeMenus} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">
                 Join Leafy
               </NavLink>
             </div>
