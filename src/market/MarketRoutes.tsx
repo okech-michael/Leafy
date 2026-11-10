@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, BadgeCheck, CircleHelp, Heart, Leaf, MapPin, Menu,
   Minus, Plus, Search, ShieldCheck, ShoppingBag, SlidersHorizontal, Truck, UserRound, X,
@@ -21,6 +21,9 @@ const now = () => new Date().toISOString()
 export function MarketRoutes() {
   const [state, setState] = useState<MarketState>(() => loadMarketState())
   const [mobileMenu, setMobileMenu] = useState(false)
+  const location = useLocation()
+  const isMarketWorkspace = location.pathname.startsWith('/market/manage') ||
+    (location.pathname.startsWith('/market/seller/') && !location.pathname.startsWith('/market/seller/apply'))
 
   const update = useCallback((operation: (current: MarketState) => MarketState) => {
     setState((current) => {
@@ -32,15 +35,13 @@ export function MarketRoutes() {
 
   return (
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-      <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur">
+      {isMarketWorkspace ? <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-5 px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/market" className="flex shrink-0 items-center gap-2.5">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white"><Leaf className="h-5 w-5" /></span>
             <span><strong className="block leading-5">Leafy Market</strong><small className="text-[10px] uppercase tracking-[.22em] text-[#718078]">Shop with purpose</small></span>
           </Link>
-          <div className="hidden flex-1 lg:block">
-            <MarketSearch />
-          </div>
+          <div className="hidden flex-1 lg:block"><MarketSearch /></div>
           <nav className="ml-auto hidden items-center gap-5 text-sm font-medium lg:flex">
             <NavLink to="/market/products" className={marketNavClass}>Shop</NavLink>
             <NavLink to="/market/stores" className={marketNavClass}>Stores</NavLink>
@@ -49,11 +50,25 @@ export function MarketRoutes() {
             <Link to="/market/wishlist" aria-label="Wishlist" className="rounded-full border border-[#e6eae5] p-2"><Heart className="h-4 w-4" /></Link>
             <Link to="/market/cart" aria-label="Shopping cart" className="relative rounded-full bg-[#285342] p-2 text-white"><ShoppingBag className="h-4 w-4" />{cartItemCount(state.cart) > 0 && <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#A4C68C] px-1 text-[10px] font-bold text-[#202923]">{cartItemCount(state.cart)}</span>}</Link>
           </nav>
-          <button type="button" className="ml-auto rounded-full border border-[#e6eae5] p-2 lg:hidden" aria-label="Toggle market navigation" onClick={() => setMobileMenu((open) => !open)}>{mobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+          <button type="button" className="ml-auto rounded-full border border-[#e6eae5] p-2 lg:hidden" aria-label="Toggle market navigation" aria-expanded={mobileMenu} onClick={() => setMobileMenu((open) => !open)}>{mobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
         </div>
         <div className="px-4 pb-3 lg:hidden"><MarketSearch /></div>
         {mobileMenu && <nav className="grid gap-3 border-t border-[#e6eae5] bg-white px-4 py-4 text-sm lg:hidden"><Link to="/market/products" onClick={() => setMobileMenu(false)}>Shop all products</Link><Link to="/market/stores" onClick={() => setMobileMenu(false)}>Seller stores</Link><Link to="/market/wishlist" onClick={() => setMobileMenu(false)}>Wishlist</Link><Link to="/market/cart" onClick={() => setMobileMenu(false)}>Cart ({cartItemCount(state.cart)})</Link><Link to="/market/account" onClick={() => setMobileMenu(false)}>My account & orders</Link><Link to="/market/seller/apply" onClick={() => setMobileMenu(false)}>Become a seller</Link></nav>}
-      </header>
+      </header> : <div className="border-b border-[#E6EAE5] bg-white/75">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="min-w-[220px] flex-1"><MarketSearch /></div>
+          <nav aria-label="Market shortcuts" className="hidden items-center gap-4 text-sm font-medium text-[#536057] md:flex">
+            <NavLink to="/market/products" className={marketNavClass}>Shop</NavLink>
+            <NavLink to="/market/stores" className={marketNavClass}>Stores</NavLink>
+            <Link to="/market/seller/apply" className="whitespace-nowrap text-[#285342] hover:text-[#1f4032]">Become a seller</Link>
+          </nav>
+          <div className="ml-auto flex items-center gap-2">
+            <Link to="/market/account" aria-label="Account" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e6eae5] text-[#285342] hover:bg-[#F6F5EF]"><UserRound className="h-4 w-4" /></Link>
+            <Link to="/market/wishlist" aria-label="Wishlist" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e6eae5] text-[#285342] hover:bg-[#F6F5EF]"><Heart className="h-4 w-4" /></Link>
+            <Link to="/market/cart" aria-label={`Shopping cart (${cartItemCount(state.cart)} items)`} className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white"><ShoppingBag className="h-4 w-4" />{cartItemCount(state.cart) > 0 && <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#A4C68C] px-1 text-[10px] font-bold text-[#202923]">{cartItemCount(state.cart)}</span>}</Link>
+          </div>
+        </div>
+      </div>}
       <main className="mx-auto max-w-[1600px] px-4 py-7 sm:px-6 lg:px-8">
         <p role="status" className="mb-6 rounded-xl border border-[#e8d8ae] bg-[#fff9e9] p-3 text-xs leading-5 text-[#604c27]"><strong>Marketplace prototype.</strong> Seed products and seller profiles are illustrative, not verified offers or live suppliers. Saved data is browser-local; seller verification, fulfilment and payment services are not connected.</p>
         <Routes>

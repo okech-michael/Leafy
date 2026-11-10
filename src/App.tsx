@@ -11,16 +11,15 @@ import {
   Globe,
   HeartHandshake,
   Leaf,
-  Menu,
   ShieldCheck,
   Sprout,
   Store,
   UtensilsCrossed,
   Waves,
-  X,
 } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { PublicNavigation } from './PublicNavigation'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
@@ -94,16 +93,6 @@ const overviewStats = [
   { label: 'Approach', value: 'Production, commerce, learning and community impact' },
 ]
 
-const publicNavItems = [
-  { to: '/', label: 'Home' },
-  { to: '/farms', label: 'Leafy Farms' },
-  { to: '/foods', label: 'Leafy Foods' },
-  { to: '/academy', label: 'Leafy Academy' },
-  { to: '/market', label: 'Leafy Market' },
-  { to: '/about', label: 'About Leafy' },
-  { to: '/operations', label: 'Operations Centre' },
-]
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -116,11 +105,13 @@ function App() {
 
 function AppShell() {
   const location = useLocation()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const isMarketRoute = location.pathname.startsWith('/market')
-  const isFarmsRoute = location.pathname.startsWith('/farms')
-  const isFoodsRoute = location.pathname.startsWith('/foods')
-  const isFoundationRoute = location.pathname.startsWith('/foundation')
+  const isWorkspaceRoute =
+    location.pathname.startsWith('/academy/') ||
+    /^\/farms\/(dashboard|farm|expert|manage)(\/|$)/.test(location.pathname) ||
+    location.pathname.startsWith('/foods/manage') ||
+    /^\/foundation\/(manage|participant)(\/|$)/.test(location.pathname) ||
+    location.pathname.startsWith('/market/manage') ||
+    (location.pathname.startsWith('/market/seller/') && !location.pathname.startsWith('/market/seller/apply'))
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -128,52 +119,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-      {!isMarketRoute && !isFarmsRoute && !isFoodsRoute && !isFoundationRoute && <header className="sticky top-0 z-50 border-b border-[#E6EAE5] bg-[#F6F5EF]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <NavLink to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white shadow-lg shadow-[#285342]/20">
-              <Leaf className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="text-lg font-semibold tracking-tight">Leafy</div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B756E]">Agriculture · commerce · community</div>
-            </div>
-          </NavLink>
-
-          <nav className="hidden items-center gap-6 text-sm font-medium text-[#202923] xl:flex">
-            {publicNavItems.map(({ to, label }) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="hidden items-center gap-3 lg:flex">
-            <NavLink to="/auth/login" className="rounded-full border border-[#E6EAE5] bg-white px-4 py-2 text-sm font-medium text-[#202923] transition hover:border-[#285342] hover:text-[#285342]">
-              Sign in
-            </NavLink>
-            <NavLink to="/auth/register" className="rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f4032]">
-              Join Leafy
-            </NavLink>
-          </div>
-
-          <button className="rounded-full border border-[#E6EAE5] p-2 lg:hidden" onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle menu">
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-
-        {menuOpen && (
-          <div className="border-t border-[#E6EAE5] bg-[#F6F5EF] px-4 py-4 lg:hidden">
-            <div className="flex flex-col gap-4 text-sm font-medium">
-              {publicNavItems.map(({ to, label }) => (
-                <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>{label}</NavLink>
-              ))}
-              <NavLink to="/auth/register" onClick={() => setMenuOpen(false)}>Join Leafy</NavLink>
-              <NavLink to="/auth/login" onClick={() => setMenuOpen(false)}>Sign in</NavLink>
-            </div>
-          </div>
-        )}
-      </header>}
+      {!isWorkspaceRoute && <PublicNavigation key={location.pathname} />}
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -309,12 +255,15 @@ function OperationsCentrePage() {
 function AdminDashboardPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Organisation overview · prototype</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Leafy’s connected work</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#6B756E]">Leafy brings agricultural production, food businesses, commercial connections, practical learning and community programmes together. This preview has no live organisation records or reporting data.</p>
         </div>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-[#6B756E]">Leafy brings agricultural production, food businesses, commercial connections, practical learning and community programmes together. This preview has no live organisation records or reporting data.</p>
+        <NavLink to="/operations" className="inline-flex items-center gap-2 rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1f4032]">
+          Operations workspace <ArrowRight className="h-4 w-4" />
+        </NavLink>
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

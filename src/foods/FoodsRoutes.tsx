@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
-  ArrowLeft, ArrowRight, CircleHelp, Download, Heart, Leaf, Menu, Minus, Package, Plus, Search, ShieldCheck,
-  ShoppingBag, SlidersHorizontal, Truck, UserRound, UtensilsCrossed, X,
+  ArrowLeft, ArrowRight, CircleHelp, Download, Heart, Leaf, Minus, Package, Plus, Search, ShieldCheck,
+  ShoppingBag, SlidersHorizontal, Truck, UserRound, UtensilsCrossed,
 } from 'lucide-react'
 import { foodCsv, loadFoodState, readFoodApi, saveFoodState } from './foodsService'
 import {
@@ -32,7 +32,6 @@ const customerLinks = [
 
 export function FoodsRoutes() {
   const [state, setState] = useState<FoodState>(() => loadFoodState())
-  const [mobileNav, setMobileNav] = useState(false)
   const location = useLocation()
   const isOperations = location.pathname.startsWith('/foods/manage')
   const isCustomerAccount = location.pathname.startsWith('/foods/account') || ['/foods/orders', '/foods/addresses', '/foods/reviews', '/foods/subscriptions', '/foods/support'].some((path) => location.pathname.startsWith(path))
@@ -46,9 +45,23 @@ export function FoodsRoutes() {
   }
 
   return <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-    {isOperations
-      ? <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6"><Link to="/foods/manage" className="flex items-center gap-2 font-semibold"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#285342] text-white"><UtensilsCrossed className="h-5 w-5" /></span>Leafy Foods Operations</Link><span className="hidden text-sm text-[#6B756E] sm:block">Staff workspace · role preview</span><Link to="/foods" className="text-sm font-medium text-[#285342]">Customer site</Link></div></header>
-      : <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:gap-5 lg:px-8"><Link to="/foods" className="flex shrink-0 items-center gap-2"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#285342] text-white"><Leaf className="h-5 w-5" /></span><span className="font-semibold">Leafy Foods</span></Link><form className="order-3 relative flex w-full items-center rounded-full border border-[#e6eae5] bg-[#F6F5EF] px-4 lg:order-none lg:ml-4 lg:max-w-md lg:flex-1" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); window.location.href = `/foods/shop?q=${encodeURIComponent(String(data.get('q') ?? ''))}` }}><Search className="h-4 w-4 shrink-0 text-[#758178]" /><input name="q" defaultValue={new URLSearchParams(location.search).get('q') ?? ''} placeholder="Search fresh food, groceries and meals" className="w-full bg-transparent px-3 py-2.5 text-sm outline-none" /></form><nav className="ml-auto hidden items-center gap-4 text-sm lg:flex"><NavLink to="/foods/shop">Shop</NavLink><NavLink to="/foods/category/vegetables">Fresh produce</NavLink><NavLink to="/foods/meals">Meals</NavLink><NavLink to="/foods/packages">Packages</NavLink><NavLink to="/foods/bulk">Bulk orders</NavLink></nav><div className="ml-auto flex items-center gap-2 lg:ml-0"><Link to="/foods/wishlist" className="hidden rounded-full border p-2 sm:inline-flex" aria-label="Food wishlist"><Heart className="h-4 w-4" /></Link><Link to="/foods/account" className="hidden rounded-full border p-2 sm:inline-flex" aria-label="Food account"><UserRound className="h-4 w-4" /></Link><Link to="/foods/cart" className="relative rounded-full bg-[#285342] p-2 text-white" aria-label={`Cart (${state.cart.reduce((sum, item) => sum + item.quantity, 0)} items)`}><ShoppingBag className="h-4 w-4" />{state.cart.length > 0 && <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#A4C68C] px-1 text-[10px] font-bold text-[#202923]">{state.cart.reduce((sum, item) => sum + item.quantity, 0)}</span>}</Link><button className="rounded-full border p-2 lg:hidden" aria-label="Toggle food navigation" onClick={() => setMobileNav((open) => !open)}>{mobileNav ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}</button></div></div>{mobileNav && <nav className="grid gap-3 border-t bg-white px-4 py-4 text-sm lg:hidden"><Link to="/foods/shop" onClick={() => setMobileNav(false)}>Shop all food</Link><Link to="/foods/category/vegetables" onClick={() => setMobileNav(false)}>Fresh produce</Link><Link to="/foods/meals" onClick={() => setMobileNav(false)}>Meals and menus</Link><Link to="/foods/packages" onClick={() => setMobileNav(false)}>Food packages</Link><Link to="/foods/bulk" onClick={() => setMobileNav(false)}>Bulk orders</Link><Link to="/foods/account" onClick={() => setMobileNav(false)}>My account</Link></nav>}</header>}
+    {isOperations && <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6"><Link to="/foods/manage" className="flex items-center gap-2 font-semibold"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#285342] text-white"><UtensilsCrossed className="h-5 w-5" /></span>Leafy Foods Operations</Link><span className="hidden text-sm text-[#6B756E] sm:block">Staff workspace · role preview</span><Link to="/foods" className="text-sm font-medium text-[#285342]">Customer site</Link></div></header>}
+    {!isOperations && <div className="border-b border-[#E6EAE5] bg-white/75">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <form className="relative flex min-w-[220px] flex-1 items-center rounded-full border border-[#e6eae5] bg-[#F6F5EF] px-4" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); window.location.href = `/foods/shop?q=${encodeURIComponent(String(data.get('q') ?? ''))}` }}>
+          <Search className="h-4 w-4 shrink-0 text-[#758178]" />
+          <input name="q" defaultValue={new URLSearchParams(location.search).get('q') ?? ''} placeholder="Search fresh food, groceries and meals" className="w-full bg-transparent px-3 py-2.5 text-sm outline-none" />
+        </form>
+        <div className="ml-auto flex items-center gap-2">
+          <Link to="/foods/wishlist" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e6eae5] text-[#285342] transition hover:bg-[#F6F5EF]" aria-label="Food wishlist"><Heart className="h-4 w-4" /></Link>
+          <Link to="/foods/account" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e6eae5] text-[#285342] transition hover:bg-[#F6F5EF]" aria-label="Food account"><UserRound className="h-4 w-4" /></Link>
+          <Link to="/foods/cart" className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white" aria-label={`Cart (${state.cart.reduce((sum, item) => sum + item.quantity, 0)} items)`}>
+            <ShoppingBag className="h-4 w-4" />
+            {state.cart.length > 0 && <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#A4C68C] px-1 text-[10px] font-bold text-[#202923]">{state.cart.reduce((sum, item) => sum + item.quantity, 0)}</span>}
+          </Link>
+        </div>
+      </div>
+    </div>}
     <main className={isOperations ? 'mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8' : 'mx-auto max-w-[1600px] px-4 py-7 sm:px-6 lg:px-8'}>
       {isCustomerAccount && <nav aria-label="Food account navigation" className="mb-5 flex gap-2 overflow-x-auto">{customerLinks.map(([to, label]) => <Link key={to} to={to} className={`${secondary} shrink-0 py-2 text-xs`}>{label}</Link>)}</nav>}
       <Routes>

@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Check,
-  CircleHelp, HeartHandshake, Menu, ShieldCheck, Sprout, Users, X,
+  CircleHelp, HeartHandshake, ShieldCheck, Sprout, Users,
 } from 'lucide-react'
 import { foundationId, loadFoundationState, saveFoundationState } from './foundationService'
 import {
@@ -30,7 +30,6 @@ const publicLinks = [
 
 export function FoundationRoutes() {
   const [state, setState] = useState<FoundationState>(() => loadFoundationState())
-  const [mobileMenu, setMobileMenu] = useState(false)
   const location = useLocation()
   const isManagement = location.pathname.startsWith('/foundation/manage')
   const isParticipantWorkspace = location.pathname.startsWith('/foundation/participant')
@@ -49,35 +48,21 @@ export function FoundationRoutes() {
 
   return <div className="min-h-screen bg-[#f6f3eb] text-[#202923]">
     <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3">Skip to content</a>
-    <header className="sticky top-0 z-40 border-b border-[#e3e5dc] bg-[#f6f3eb]/95 backdrop-blur">
+    {(isManagement || isParticipantWorkspace) && <header className="sticky top-0 z-40 border-b border-[#e3e5dc] bg-[#f6f3eb]/95 backdrop-blur">
       {isManagement ? <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-4 py-4 sm:px-7 lg:px-10">
         <Link to="/foundation/manage" className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#24483b] text-white"><HeartHandshake className="h-5 w-5" /></span><span><strong className="block font-semibold">Leafy Foundation</strong><small className="text-[10px] uppercase tracking-[.2em] text-[#68746a]">Staff workspace · preview</small></span></Link>
         <Link to="/foundation" className={outlineButton + ' py-2.5'}>Return to public site</Link>
-      </div> : isParticipantWorkspace ? <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-7 lg:px-10">
+      </div> : <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-7 lg:px-10">
         <Link to="/foundation/participant" className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#24483b] text-white"><HeartHandshake className="h-5 w-5" /></span><span><strong className="block font-semibold">Foundation participant space</strong><small className="text-[10px] uppercase tracking-[.2em] text-[#68746a]">Account preview</small></span></Link>
         <nav aria-label="Participant navigation" className="flex flex-wrap items-center gap-2 text-sm"><NavLink to="/foundation/participant" end className={({ isActive }) => `${outlineButton} py-2 ${isActive ? 'bg-[#eaece2]' : ''}`}>Overview</NavLink><a href="/foundation/participant#activities" className={outlineButton + ' py-2'}>Activities</a><Link to="/foundation" className={outlineButton + ' py-2'}>Public site</Link></nav>
-      </div> : <>
-      <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-4 py-4 sm:px-7 lg:px-10">
-        <Link to="/foundation" className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#24483b] text-white"><HeartHandshake className="h-5 w-5" /></span>
-          <span><strong className="block font-semibold tracking-tight">Leafy Foundation</strong><small className="block text-[10px] uppercase tracking-[.2em] text-[#68746a]">People. Possibility. Progress.</small></span>
-        </Link>
-        <nav aria-label="Foundation main navigation" className="hidden items-center gap-5 text-[13px] font-medium xl:flex">
-          <NavLink end to="/foundation" className={({ isActive }) => isActive ? 'text-[#24483b]' : 'text-[#536057] hover:text-[#24483b]'}>Home</NavLink>
-          {publicLinks.map(([to, label]) => <NavLink key={to} to={to} className={({ isActive }) => isActive ? 'text-[#24483b]' : 'text-[#536057] hover:text-[#24483b]'}>{label}</NavLink>)}
-        </nav>
-        <div className="hidden items-center gap-2 md:flex">
-          <Link to="/foundation/get-involved#volunteer" className={button + ' py-2.5'}>Join the effort <ArrowRight className="h-4 w-4" /></Link>
-        </div>
-        <button type="button" className="rounded-full border border-[#d6ddd4] p-2 xl:hidden" aria-label="Toggle Foundation navigation" aria-expanded={mobileMenu} onClick={() => setMobileMenu((open) => !open)}>{mobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+      </div>}
+    </header>}
+    {!isManagement && !isParticipantWorkspace && <nav aria-label="Foundation sections" className="border-b border-[#e3e5dc] bg-[#f6f3eb]">
+      <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6 lg:px-8">
+        <NavLink end to="/foundation" className={({ isActive }) => `shrink-0 rounded-full px-3 py-2 text-sm font-medium ${isActive ? 'bg-white text-[#24483b]' : 'text-[#536057] hover:bg-white hover:text-[#24483b]'}`}>Foundation home</NavLink>
+        {publicLinks.map(([to, label]) => <NavLink key={to} to={to} className={({ isActive }) => `shrink-0 rounded-full px-3 py-2 text-sm font-medium ${isActive ? 'bg-white text-[#24483b]' : 'text-[#536057] hover:bg-white hover:text-[#24483b]'}`}>{label}</NavLink>)}
       </div>
-      {mobileMenu &&       <nav aria-label="Foundation main navigation" className="grid gap-3 border-t border-[#e3e5dc] bg-[#f6f3eb] px-5 py-4 text-sm xl:hidden">
-        <Link to="/foundation" onClick={() => setMobileMenu(false)}>Home</Link>
-        {publicLinks.map(([to, label]) => <Link key={to} to={to} onClick={() => setMobileMenu(false)}>{label}</Link>)}
-        <Link to="/foundation/get-involved#volunteer" className={`${button} mt-2`} onClick={() => setMobileMenu(false)}>Join the effort</Link>
-      </nav>}
-      </>}
-    </header>
+    </nav>}
     <Routes>
       <Route index element={<FoundationHome state={state} />} />
       <Route path="about" element={<AboutPage state={state} />} />
