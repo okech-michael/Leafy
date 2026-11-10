@@ -441,7 +441,7 @@ function LandingPage() {
 
   return (
     <main className="overflow-x-hidden">
-      <section ref={heroRef} className="relative isolate min-h-[90vh] overflow-hidden border-b border-[#E6EAE5] bg-[#202923] text-white">
+      <section ref={heroRef} className="relative isolate min-h-screen overflow-hidden border-b border-[#E6EAE5] bg-[#202923] text-white">
         <video
           className="absolute inset-0 h-full w-full object-cover opacity-50"
           autoPlay
@@ -456,15 +456,15 @@ function LandingPage() {
 
         <div className="absolute inset-0 bg-[#202923]/60" />
 
-        <div className="relative mx-auto flex min-h-[90vh] w-full max-w-[1600px] items-center px-5 py-20 sm:px-8 lg:px-16">
-          <div className="hero-copy w-full max-w-[1450px]">
-            <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1450px] text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl lg:text-7xl">
+        <div className="relative mx-auto flex min-h-screen w-full items-center justify-center px-5 py-20 sm:px-8 lg:px-16">
+          <div className="hero-copy w-full max-w-[1450px] text-center">
+            <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mx-auto max-w-[1450px] text-balance text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl lg:text-7xl">
               Connecting Agricultural Innovation with People, Markets and Opportunity.
             </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="mt-6 max-w-4xl text-base leading-7 text-[#F3F7F4]/85 sm:text-lg sm:leading-8">
+            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="mx-auto mt-6 max-w-4xl text-base leading-7 text-[#F3F7F4]/85 sm:text-lg sm:leading-8">
               Leafy connects agricultural innovators, producers, organisations, institutions, investors and consumers so agricultural ideas and products can become sustainable, commercially viable and impactful.
             </motion.p>
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <NavLink to="/destination" className="inline-flex items-center justify-center rounded-full bg-[#A4C68C] px-6 py-3 font-medium text-[#1B2C24] transition hover:bg-[#bfd9a9]">
                 Explore Leafy <ArrowRight className="ml-2 h-4 w-4" />
               </NavLink>
