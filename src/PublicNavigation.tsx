@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
-import { ChevronDown, Leaf, Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { LeafyLogo } from './LeafyLogo'
 
 const exploreLinks = [
   { to: '/farms', label: 'Leafy Farms', detail: 'Production and producer support' },
@@ -63,12 +64,9 @@ export function PublicNavigation() {
           end
           onClick={closeMenus}
           aria-label="Leafy home"
-          className="flex shrink-0 items-center gap-2.5 rounded-lg text-[#26372F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4"
+          className="flex shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#285342] text-white">
-            <Leaf className="h-[18px] w-[18px]" strokeWidth={2} />
-          </span>
-          <span className="text-[23px] font-[650] tracking-[-0.04em]">Leafy</span>
+          <LeafyLogo className="h-14 w-28 sm:w-32" />
         </NavLink>
 
         <div className="hidden items-center gap-1 xl:flex">

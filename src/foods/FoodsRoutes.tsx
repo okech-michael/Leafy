@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, CircleHelp, Download, Heart, Leaf, Minus, Package, Plus, Search, ShieldCheck,
-  ShoppingBag, SlidersHorizontal, Truck, UserRound, UtensilsCrossed,
+  ShoppingBag, SlidersHorizontal, Truck, UserRound,
 } from 'lucide-react'
 import { foodCsv, loadFoodState, readFoodApi, saveFoodState } from './foodsService'
+import { LeafyLogo } from '../LeafyLogo'
 import {
   foodCartSubtotal, foodDiscount, foodProduct,
   type BulkRequest, type FoodAddress, type FoodCartItem, type FoodCategory,
@@ -45,7 +46,7 @@ export function FoodsRoutes() {
   }
 
   return <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-    {isOperations && <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6"><Link to="/foods/manage" className="flex items-center gap-2 font-semibold"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#285342] text-white"><UtensilsCrossed className="h-5 w-5" /></span>Leafy Foods Operations</Link><span className="hidden text-sm text-[#6B756E] sm:block">Staff workspace · role preview</span><Link to="/foods" className="text-sm font-medium text-[#285342]">Customer site</Link></div></header>}
+    {isOperations && <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6"><Link to="/foods/manage" aria-label="Leafy Foods operations" className="flex items-center gap-2 font-semibold"><LeafyLogo className="h-9 w-[4.5rem]" /><span>Foods Operations</span></Link><span className="hidden text-sm text-[#6B756E] sm:block">Staff workspace · role preview</span><Link to="/foods" className="text-sm font-medium text-[#285342]">Customer site</Link></div></header>}
     {!isOperations && <div className="border-b border-[#E6EAE5] bg-white/75">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <form className="relative flex min-w-[220px] flex-1 items-center rounded-full border border-[#e6eae5] bg-[#F6F5EF] px-4" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); window.location.href = `/foods/shop?q=${encodeURIComponent(String(data.get('q') ?? ''))}` }}>

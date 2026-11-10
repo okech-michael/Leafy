@@ -20,6 +20,7 @@ import {
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
+import { LeafyLogo } from './LeafyLogo'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
@@ -566,15 +567,7 @@ function LandingPage() {
       <footer className="border-t border-[#E6EAE5] bg-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr_1.1fr] lg:px-8">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white">
-                <Leaf className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="text-lg font-semibold">Leafy</div>
-                <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B756E]">Nourishing People</div>
-              </div>
-            </div>
+            <LeafyLogo className="h-16 w-32" />
             <p className="mt-4 max-w-xs text-sm leading-6 text-[#6B756E]">Connecting agricultural innovation and production with commercial opportunities, practical learning and community impact.</p>
           </div>
 

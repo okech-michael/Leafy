@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
-  ArrowLeft, ArrowRight, BadgeCheck, CircleHelp, Heart, Leaf, MapPin, Menu,
+  ArrowLeft, ArrowRight, BadgeCheck, CircleHelp, Heart, MapPin, Menu,
   Minus, Plus, Search, ShieldCheck, ShoppingBag, SlidersHorizontal, Truck, UserRound, X,
 } from 'lucide-react'
 import {
@@ -11,6 +11,7 @@ import {
   type CartItem, type MarketAddress, type MarketOrder, type MarketProduct, type MarketRole,
   type MarketCheckoutDraft, type MarketState, type OrderStatus, type PaymentStatus, type ProductReview,
 } from './marketStore'
+import { LeafyLogo } from '../LeafyLogo'
 
 const primary = 'inline-flex items-center justify-center gap-2 rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1e4032] disabled:cursor-not-allowed disabled:opacity-50'
 const secondary = 'inline-flex items-center justify-center gap-2 rounded-full border border-[#dce4dc] bg-white px-4 py-2.5 text-sm font-medium text-[#285342] hover:border-[#285342]'
@@ -37,9 +38,9 @@ export function MarketRoutes() {
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
       {isMarketWorkspace ? <header className="sticky top-0 z-40 border-b border-[#e6eae5] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-5 px-4 py-3 sm:px-6 lg:px-8">
-          <Link to="/market" className="flex shrink-0 items-center gap-2.5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white"><Leaf className="h-5 w-5" /></span>
-            <span><strong className="block leading-5">Leafy Market</strong><small className="text-[10px] uppercase tracking-[.22em] text-[#718078]">Shop with purpose</small></span>
+          <Link to="/market" aria-label="Leafy Market" className="flex shrink-0 items-center gap-2.5">
+            <LeafyLogo className="h-10 w-20" />
+            <span><strong className="block leading-5">Market</strong><small className="text-[10px] uppercase tracking-[.22em] text-[#718078]">Shop with purpose</small></span>
           </Link>
           <div className="hidden flex-1 lg:block"><MarketSearch /></div>
           <nav className="ml-auto hidden items-center gap-5 text-sm font-medium lg:flex">
