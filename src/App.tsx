@@ -12,11 +12,11 @@ import {
   UtensilsCrossed,
   UsersRound,
 } from 'lucide-react'
-import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
+import { Component, lazy, Suspense, useEffect, useState, type ErrorInfo, type FormEvent, type ReactNode } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { HomepageContent } from './HomepageContent'
-import { LeafyLoading } from './LeafyLoading'
+import { LeafyLoading, LeafyLoadingProvider } from './LeafyLoading'
 import { LeafyLogo } from './LeafyLogo'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
@@ -87,7 +87,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AppShell />
+        <LeafyLoadingProvider>
+          <AppShell />
+        </LeafyLoadingProvider>
       </BrowserRouter>
     </QueryClientProvider>
   )
@@ -115,29 +117,59 @@ function AppShell() {
       {!isWorkspaceRoute && !isAuthRoute && <PublicNavigation key={location.pathname} />}
 
       <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<AboutLeafyPage />} />
-          <Route path="/destination" element={<DestinationSelection />} />
-          <Route path="/operations" element={<OperationsCentrePage />} />
-          <Route path="/auth/:mode" element={<AuthPage />} />
-          <Route path="/auth/forgot" element={<ForgotPasswordPage />} />
-          <Route path="/auth/reset" element={<PasswordResetPage />} />
-          <Route path="/auth/verify" element={<EmailVerificationPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/employee" element={<EmployeePortalPage />} />
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/division/:divisionId" element={<DivisionRedirect />} />
-          <Route path="/foods/*" element={<Suspense fallback={<LeafyLoading />}><FoodsRoutes /></Suspense>} />
-          <Route path="/farms/*" element={<Suspense fallback={<LeafyLoading />}><FarmsRoutes /></Suspense>} />
-          <Route path="/academy/*" element={<Suspense fallback={<LeafyLoading />}><AcademyRoutes /></Suspense>} />
-          <Route path="/foundation/*" element={<Suspense fallback={<LeafyLoading />}><FoundationRoutes /></Suspense>} />
-          <Route path="/market/*" element={<Suspense fallback={<LeafyLoading />}><MarketRoutes /></Suspense>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <RouteErrorBoundary key={location.pathname}>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<AboutLeafyPage />} />
+            <Route path="/destination" element={<DestinationSelection />} />
+            <Route path="/operations" element={<OperationsCentrePage />} />
+            <Route path="/auth/:mode" element={<AuthPage />} />
+            <Route path="/auth/forgot" element={<ForgotPasswordPage />} />
+            <Route path="/auth/reset" element={<PasswordResetPage />} />
+            <Route path="/auth/verify" element={<EmailVerificationPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/employee" element={<EmployeePortalPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/division/:divisionId" element={<DivisionRedirect />} />
+            <Route path="/foods/*" element={<Suspense fallback={<LeafyLoading />}><FoodsRoutes /></Suspense>} />
+            <Route path="/farms/*" element={<Suspense fallback={<LeafyLoading />}><FarmsRoutes /></Suspense>} />
+            <Route path="/academy/*" element={<Suspense fallback={<LeafyLoading />}><AcademyRoutes /></Suspense>} />
+            <Route path="/foundation/*" element={<Suspense fallback={<LeafyLoading />}><FoundationRoutes /></Suspense>} />
+            <Route path="/market/*" element={<Suspense fallback={<LeafyLoading />}><MarketRoutes /></Suspense>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </RouteErrorBoundary>
       </AnimatePresence>
     </div>
   )
+}
+
+class RouteErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state: { error: Error | null } = { error: null }
+
+  static getDerivedStateFromError(error: Error): { error: Error } {
+    return { error }
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('A page failed to load.', error, info.componentStack)
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <main role="alert" className="mx-auto max-w-2xl px-5 py-20 text-center">
+          <h1 className="text-2xl font-semibold text-[#0B3D2E]">This page could not be loaded.</h1>
+          <p className="mt-3 text-sm leading-6 text-[#4B5E56]">The page request failed. Check your connection and try again.</p>
+          <button type="button" onClick={() => window.location.reload()} className="mt-6 rounded-full bg-[#0B3D2E] px-5 py-3 text-sm font-semibold text-white hover:bg-[#164f3d]">
+            Retry page
+          </button>
+        </main>
+      )
+    }
+
+    return this.props.children
+  }
 }
 
 function AboutLeafyPage() {
