@@ -3,17 +3,21 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowRight,
   BookOpen,
+  Compass,
+  Eye,
+  EyeOff,
   HeartHandshake,
-  ShieldCheck,
   Sprout,
   Store,
   UtensilsCrossed,
+  UsersRound,
 } from 'lucide-react'
 import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { HomepageContent } from './HomepageContent'
 import { LeafyLoading } from './LeafyLoading'
+import { LeafyLogo } from './LeafyLogo'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
@@ -100,6 +104,7 @@ function AppShell() {
     /^\/foundation\/(manage|participant)(\/|$)/.test(location.pathname) ||
     location.pathname.startsWith('/market/manage') ||
     (location.pathname.startsWith('/market/seller/') && !location.pathname.startsWith('/market/seller/apply'))
+  const isAuthRoute = location.pathname.startsWith('/auth/')
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -107,7 +112,7 @@ function AppShell() {
 
   return (
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
-      {!isWorkspaceRoute && <PublicNavigation key={location.pathname} />}
+      {!isWorkspaceRoute && !isAuthRoute && <PublicNavigation key={location.pathname} />}
 
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -386,99 +391,316 @@ function DestinationSelection() {
 function AuthPage() {
   const { mode } = useParams()
   const navigate = useNavigate()
+  const [values, setValues] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [authNotice, setAuthNotice] = useState('')
   const currentMode = mode === 'login' || mode === 'register' ? mode : 'login'
   const isLogin = currentMode === 'login'
+
+  const errors = {
+    name: values.name.trim().length < 2 ? 'Enter your full name.' : '',
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) ? '' : 'Enter a valid email address.',
+    phone: /^\+?[0-9\s()-]{7,20}$/.test(values.phone.trim()) ? '' : 'Enter a valid phone number.',
+    password: values.password.length >= 8 ? '' : 'Use at least 8 characters.',
+    confirmPassword: values.confirmPassword && values.confirmPassword === values.password ? '' : 'Passwords do not match.',
+  }
+  const isRegistrationValid = Object.values(errors).every((error) => !error)
+  const strengthScore = [
+    values.password.length >= 8,
+    /[a-z]/.test(values.password) && /[A-Z]/.test(values.password),
+    /\d/.test(values.password),
+    /[^A-Za-z0-9]/.test(values.password),
+  ].filter(Boolean).length
+  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][strengthScore]
+
+  const updateValue = (field: keyof typeof values, value: string) => {
+    setValues((current) => ({ ...current, [field]: value }))
+    setAuthNotice('')
+  }
+
+  const markTouched = (field: keyof typeof values) => {
+    setTouched((current) => ({ ...current, [field]: true }))
+  }
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (isLogin) {
       navigate('/academy/student')
       return
     }
+    setTouched({ name: true, email: true, phone: true, password: true, confirmPassword: true })
+    if (!isRegistrationValid) {
+      setAuthNotice('Review the highlighted fields before continuing.')
+      return
+    }
     setAuthNotice('Account creation is not connected yet. No account was created.')
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="grid gap-8 overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_40px_80px_rgba(32,41,35,0.08)] lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="relative min-h-[500px] overflow-hidden bg-[#285342] p-8 text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(164,198,140,0.4),_transparent_40%)]" />
-          <div className="relative z-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Shared account access</p>
-            <h1 className="mt-6 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">{isLogin ? 'Welcome back to Leafy.' : 'Join the Leafy community.'}</h1>
-            <p className="mt-5 max-w-md text-base leading-7 text-[#E8F2EA]">{isLogin ? 'This prototype opens a sample learner account after sign-in. Real authentication is not connected.' : 'Account creation is not connected yet. This page is a preview and does not create an account.'}</p>
+    <main className="min-h-screen bg-[#F7F9F4]">
+      <header className="border-b border-[#DFE7DF] bg-white">
+        <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-5 sm:px-8">
+          <NavLink to="/" aria-label="Leafy home" className="inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EBB57] focus-visible:ring-offset-2">
+            <LeafyLogo className="h-11 w-24" />
+          </NavLink>
+          <div className="flex items-center gap-3 text-sm">
+            <NavLink to="/" className="hidden font-medium text-[#4B5E56] hover:text-[#0B3D2E] sm:inline">Return to home</NavLink>
+            <span className="hidden h-5 w-px bg-[#DFE7DF] sm:block" />
+            <span className="text-[#4B5E56]">{isLogin ? 'New to Leafy?' : 'Already a member?'}</span>
+            <NavLink to={isLogin ? '/auth/register' : '/auth/login'} className="font-semibold text-[#0B3D2E] underline decoration-[#2EBB57] decoration-2 underline-offset-4 hover:text-[#247947]">
+              {isLogin ? 'Create an account' : 'Sign in'}
+            </NavLink>
+          </div>
+        </div>
+      </header>
 
-            <div className="mt-8 space-y-4">
-              {['Unified member identity', 'Division switching', 'Secure access management'].map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <ShieldCheck className="h-5 w-5 text-[#A4C68C]" />
-                  <span>{item}</span>
+      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-8 sm:py-8 lg:min-h-[calc(100vh-68px)] lg:grid-cols-2 lg:items-stretch lg:gap-8 lg:px-10 lg:py-8">
+        <section className="order-2 overflow-hidden rounded-[1.75rem] bg-[#0B3D2E] text-white lg:order-1">
+          <div className="grid h-full grid-rows-[auto_1fr_auto] p-6 sm:p-8 lg:p-10">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex rounded bg-white p-1"><LeafyLogo className="h-10 w-24" /></span>
+              <span className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-medium text-white/85">Agricultural innovation</span>
+            </div>
+
+            <div className="grid content-center gap-6 py-7">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9BE3A7]">{isLogin ? 'Welcome back' : 'Your next chapter starts here'}</p>
+                <h1 className="mt-3 max-w-xl text-3xl font-semibold leading-tight tracking-[-0.035em] sm:text-4xl xl:text-[2.75rem]">
+                  {isLogin ? 'Good to have you back.' : 'Good Ideas Deserve Room to Grow.'}
+                </h1>
+                <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 sm:text-base sm:leading-7">
+                  {isLogin
+                    ? 'Continue exploring ideas, people and opportunities across the Leafy ecosystem.'
+                    : 'Join an ecosystem where agricultural innovators, investors, mentors and organisations can discover ideas, build connections and explore opportunities together.'}
+                </p>
+              </div>
+
+              <div className="relative min-h-44 overflow-hidden rounded-2xl border border-white/15 bg-[#174E37] sm:min-h-52">
+                <div aria-hidden="true" className="absolute inset-0 bg-[repeating-linear-gradient(165deg,rgba(155,227,167,0.16)_0px,rgba(155,227,167,0.16)_1px,transparent_1px,transparent_22px)]" />
+                <img
+                  src="https://images.unsplash.com/photo-1464226184884-fa52ac9fcf7a?auto=format&fit=crop&w=1200&q=85"
+                  alt="Healthy crops growing in an agricultural field"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  onError={(event) => { event.currentTarget.style.display = 'none' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0B3D2E]/65 via-[#0B3D2E]/10 to-transparent" />
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full border border-white/20 bg-[#0B3D2E]/70 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
+                  <Sprout className="h-4 w-4 text-[#9BE3A7]" />
+                  Ideas rooted in real-world needs
                 </div>
-              ))}
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[
+                  { icon: Sprout, label: 'Showcase your innovations' },
+                  { icon: UsersRound, label: 'Connect with relevant people' },
+                  { icon: Compass, label: 'Discover ways to grow' },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-3 text-xs font-medium leading-5 text-white/90">
+                    <Icon className="h-4 w-4 shrink-0 text-[#9BE3A7]" />
+                    {label}
+                  </div>
+                ))}
+              </div>
             </div>
+
+            <p className="border-t border-white/15 pt-4 text-xs leading-5 text-white/60">A shared space for people shaping the future of agriculture and food.</p>
           </div>
-        </div>
+        </section>
 
-        <div className="p-8 sm:p-10">
-          <div className="mb-8 flex gap-2 rounded-full border border-[#E6EAE5] bg-[#F6F5EF] p-1">
-            <NavLink to="/auth/login" className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-medium ${isLogin ? 'bg-white text-[#202923] shadow-sm' : 'text-[#6B756E]'}`}>
-              Login
-            </NavLink>
-            <NavLink to="/auth/register" className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-medium ${!isLogin ? 'bg-white text-[#202923] shadow-sm' : 'text-[#6B756E]'}`}>
-              Register
-            </NavLink>
+        <section className="order-1 flex items-center justify-center rounded-[1.75rem] border border-[#DFE7DF] bg-white px-5 py-7 shadow-[0_18px_50px_rgba(11,61,46,0.06)] sm:px-8 sm:py-9 lg:order-2 lg:px-10 xl:px-14">
+          <div className="w-full max-w-[470px]">
+            <div className="mb-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#F57C00]">{isLogin ? 'Member access' : 'Start your journey'}</p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.035em] text-[#0B3D2E] sm:text-4xl">
+                {isLogin ? 'Sign in to Leafy' : 'Create your Leafy account'}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[#4B5E56]">
+                {isLogin ? 'Sign in to continue to your Leafy workspace.' : 'Get started and become part of the Leafy ecosystem.'}
+              </p>
+            </div>
+
+            {!isLogin && (
+              <p role="status" className="mb-5 rounded-xl border border-[#F3D3AE] bg-[#FFF7EE] px-4 py-3 text-xs leading-5 text-[#713D12]">
+                Account creation is a prototype and is not connected yet. Do not enter real personal information; submitting will not create an account.
+              </p>
+            )}
+
+            <form className="space-y-4" noValidate={!isLogin} onSubmit={handleSubmit}>
+              {!isLogin && (
+                <AuthField
+                  id="register-name"
+                  label="Full name"
+                  placeholder="Your full name"
+                  value={values.name}
+                  error={touched.name ? errors.name : ''}
+                  onChange={(value) => updateValue('name', value)}
+                  onBlur={() => markTouched('name')}
+                  required
+                />
+              )}
+
+              <AuthField
+                id={isLogin ? 'login-email' : 'register-email'}
+                label="Email address"
+                type="email"
+                placeholder="you@example.com"
+                value={values.email}
+                error={!isLogin && touched.email ? errors.email : ''}
+                onChange={(value) => updateValue('email', value)}
+                onBlur={() => markTouched('email')}
+                required
+              />
+
+              {!isLogin && (
+                <AuthField
+                  id="register-phone"
+                  label="Phone number"
+                  type="tel"
+                  placeholder="+254 700 000 000"
+                  value={values.phone}
+                  error={touched.phone ? errors.phone : ''}
+                  onChange={(value) => updateValue('phone', value)}
+                  onBlur={() => markTouched('phone')}
+                  required
+                />
+              )}
+
+              <AuthField
+                id={isLogin ? 'login-password' : 'register-password'}
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder={isLogin ? 'Enter your password' : 'At least 8 characters'}
+                value={values.password}
+                error={!isLogin && touched.password ? errors.password : ''}
+                onChange={(value) => updateValue('password', value)}
+                onBlur={() => markTouched('password')}
+                required
+                trailing={
+                  <button
+                    type="button"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                    onClick={() => setShowPassword((shown) => !shown)}
+                    className="rounded-md p-1 text-[#4B5E56] hover:bg-[#EAF4EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EBB57]"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                }
+              />
+
+              {!isLogin && (
+                <div className="-mt-2">
+                  <div className="flex items-center gap-1.5" role="status" aria-live="polite" aria-label={`Password strength: ${strengthLabel || 'not entered'}`}>
+                    {[1, 2, 3, 4].map((level) => (
+                      <span key={level} className={`h-1 flex-1 rounded-full ${strengthScore >= level ? (strengthScore < 2 ? 'bg-[#F57C00]' : strengthScore < 4 ? 'bg-[#2EBB57]' : 'bg-[#0B3D2E]') : 'bg-[#E3EAE3]'}`} />
+                    ))}
+                    <span className="ml-2 min-w-10 text-right text-[11px] font-medium text-[#4B5E56]">{strengthLabel}</span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-[#65756D]">Use 8+ characters; a mix of letters, numbers and symbols is stronger.</p>
+                </div>
+              )}
+
+              {!isLogin && (
+                <AuthField
+                  id="register-confirm-password"
+                  label="Confirm password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Enter your password again"
+                  value={values.confirmPassword}
+                  error={touched.confirmPassword ? errors.confirmPassword : ''}
+                  onChange={(value) => updateValue('confirmPassword', value)}
+                  onBlur={() => markTouched('confirmPassword')}
+                  required
+                  trailing={
+                    <button
+                      type="button"
+                      aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
+                      aria-pressed={showConfirmPassword}
+                      onClick={() => setShowConfirmPassword((shown) => !shown)}
+                      className="rounded-md p-1 text-[#4B5E56] hover:bg-[#EAF4EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EBB57]"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  }
+                />
+              )}
+
+              {isLogin && <div className="flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-[#65756D]"><span>Demo sign-in opens a sample learner workspace. Authentication is not connected.</span><NavLink to="/auth/forgot" className="shrink-0 font-semibold text-[#0B3D2E] hover:underline">Forgot password?</NavLink></div>}
+              {!isLogin && authNotice && <p role="alert" className="rounded-xl border border-[#F3D3AE] bg-[#FFF7EE] px-4 py-3 text-sm leading-5 text-[#713D12]">{authNotice}</p>}
+              {isLogin && authNotice && <p role="alert" className="text-sm text-[#713D12]">{authNotice}</p>}
+
+              <button
+                type="submit"
+                disabled={!isLogin && !isRegistrationValid}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0B3D2E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#164f3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EBB57] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#9AA9A1] disabled:text-white"
+              >
+                {isLogin ? 'Sign in to account' : 'Create account'} <ArrowRight className="h-4 w-4" />
+              </button>
+              {!isLogin && <p className="text-center text-[11px] leading-5 text-[#65756D]">By continuing, you confirm that the information you enter is yours to share. Registration is currently a non-functional prototype.</p>}
+
+              <div className="border-t border-[#E3EAE3] pt-4 text-center text-sm text-[#4B5E56]">
+                {isLogin ? 'New to Leafy?' : 'Already a member?'}{' '}
+                <NavLink to={isLogin ? '/auth/register' : '/auth/login'} className="font-semibold text-[#0B3D2E] underline decoration-[#2EBB57] underline-offset-4">
+                  {isLogin ? 'Create your account' : 'Sign in'}
+                </NavLink>
+              </div>
+            </form>
           </div>
-
-          {!isLogin && <p role="status" className="mb-5 rounded-xl border border-[#F3D3AE] bg-[#FFF4E8] p-4 text-sm leading-6 text-[#713D12]">Account registration is a prototype. Do not enter real personal information; submitting will not create or save an account.</p>}
-
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {!isLogin && (
-              <div>
-                <label className="mb-2 block text-sm font-medium text-[#202923]">Full name</label>
-                <input required className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="Alex Maina" />
-              </div>
-            )}
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-[#202923]">Email address</label>
-              <input type="email" required className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="you@example.com" />
-            </div>
-
-            {!isLogin && (
-              <div>
-                <label className="mb-2 block text-sm font-medium text-[#202923]">Phone number</label>
-                <input type="tel" required className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="+254 700 000 000" />
-              </div>
-            )}
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-[#202923]">Password</label>
-              <input type="password" required minLength={8} className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="••••••••" />
-            </div>
-
-            {!isLogin && (
-              <div>
-                <label className="mb-2 block text-sm font-medium text-[#202923]">Confirm password</label>
-                <input type="password" required minLength={8} className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="••••••••" />
-              </div>
-            )}
-
-            {!isLogin && authNotice && <p role="status" className="text-sm text-[#7b4a1b]">{authNotice}</p>}
-            {isLogin && <p className="text-xs leading-5 text-[#6B756E]">Frontend demo sign-in: any valid email and password will open the sample learner account. Authentication is not connected.</p>}
-            <button type="submit" className="w-full rounded-full bg-[#285342] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1f4032]">
-              {isLogin ? 'Sign in to account' : 'Create account'}
-            </button>
-
-            <div className="text-center text-sm text-[#6B756E]">
-              {isLogin ? 'Forgot password?' : 'Already a member?'}{' '}
-              <NavLink to={isLogin ? '/auth/register' : '/auth/login'} className="font-semibold text-[#285342]">
-                {isLogin ? 'Create account' : 'Sign in'}
-              </NavLink>
-            </div>
-          </form>
-        </div>
+        </section>
       </div>
     </main>
+  )
+}
+
+function AuthField({
+  id,
+  label,
+  value,
+  onChange,
+  onBlur,
+  error,
+  type = 'text',
+  placeholder,
+  required = false,
+  trailing,
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  onBlur: () => void
+  error?: string
+  type?: string
+  placeholder?: string
+  required?: boolean
+  trailing?: React.ReactNode
+}) {
+  const errorId = `${id}-error`
+
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-[#26372F]">{label}{required && <span className="ml-1 text-[#F57C00]">*</span>}</label>
+      <div className={`flex min-h-11 items-center rounded-xl border bg-[#FBFCFA] px-3 transition focus-within:ring-2 focus-within:ring-[#2EBB57]/40 ${error ? 'border-[#C84C32]' : 'border-[#D9E3D9] focus-within:border-[#2EBB57]'}`}>
+        <input
+          id={id}
+          name={id}
+          type={type}
+          value={value}
+          required={required}
+          placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          onChange={(event) => onChange(event.target.value)}
+          onBlur={onBlur}
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-[#26372F] outline-none placeholder:text-[#89968F]"
+        />
+        {trailing}
+      </div>
+      {error && <p id={errorId} className="mt-1 text-xs font-medium text-[#B33D2B]">{error}</p>}
+    </div>
   )
 }
 
