@@ -13,6 +13,7 @@ import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { HomepageContent } from './HomepageContent'
+import { LeafyLoading } from './LeafyLoading'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
@@ -122,11 +123,11 @@ function AppShell() {
           <Route path="/employee" element={<EmployeePortalPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/division/:divisionId" element={<DivisionRedirect />} />
-          <Route path="/foods/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foods…</div>}><FoodsRoutes /></Suspense>} />
-          <Route path="/farms/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Farms…</div>}><FarmsRoutes /></Suspense>} />
-          <Route path="/academy/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Academy…</div>}><AcademyRoutes /></Suspense>} />
-          <Route path="/foundation/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foundation…</div>}><FoundationRoutes /></Suspense>} />
-          <Route path="/market/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Market…</div>}><MarketRoutes /></Suspense>} />
+          <Route path="/foods/*" element={<Suspense fallback={<LeafyLoading />}><FoodsRoutes /></Suspense>} />
+          <Route path="/farms/*" element={<Suspense fallback={<LeafyLoading />}><FarmsRoutes /></Suspense>} />
+          <Route path="/academy/*" element={<Suspense fallback={<LeafyLoading />}><AcademyRoutes /></Suspense>} />
+          <Route path="/foundation/*" element={<Suspense fallback={<LeafyLoading />}><FoundationRoutes /></Suspense>} />
+          <Route path="/market/*" element={<Suspense fallback={<LeafyLoading />}><MarketRoutes /></Suspense>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
