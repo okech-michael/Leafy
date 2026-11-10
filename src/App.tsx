@@ -94,6 +94,16 @@ const overviewStats = [
   { label: 'Approach', value: 'Production, commerce, learning and community impact' },
 ]
 
+const publicNavItems = [
+  { to: '/', label: 'Home' },
+  { to: '/farms', label: 'Leafy Farms' },
+  { to: '/foods', label: 'Leafy Foods' },
+  { to: '/academy', label: 'Leafy Academy' },
+  { to: '/market', label: 'Leafy Market' },
+  { to: '/about', label: 'About Leafy' },
+  { to: '/operations', label: 'Operations Centre' },
+]
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -130,27 +140,20 @@ function AppShell() {
             </div>
           </NavLink>
 
-                  <nav className="hidden items-center gap-8 text-sm font-medium text-[#202923] lg:flex">
-            <NavLink to="/" className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
-              Home
-            </NavLink>
-            <NavLink to="/destination" className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
-              Explore
-            </NavLink>
-            <NavLink to="/dashboard" className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
-              Member Portal
-            </NavLink>
-            <NavLink to="/auth/register" className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
-              Join Leafy
-            </NavLink>
+          <nav className="hidden items-center gap-6 text-sm font-medium text-[#202923] xl:flex">
+            {publicNavItems.map(({ to, label }) => (
+              <NavLink key={to} to={to} className={({ isActive }) => `transition hover:text-[#285342] ${isActive ? 'text-[#285342]' : ''}`}>
+                {label}
+              </NavLink>
+            ))}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
             <NavLink to="/auth/login" className="rounded-full border border-[#E6EAE5] bg-white px-4 py-2 text-sm font-medium text-[#202923] transition hover:border-[#285342] hover:text-[#285342]">
               Sign in
             </NavLink>
-            <NavLink to="/destination" className="rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f4032]">
-              Get started
+            <NavLink to="/auth/register" className="rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f4032]">
+              Join Leafy
             </NavLink>
           </div>
 
@@ -162,9 +165,9 @@ function AppShell() {
         {menuOpen && (
           <div className="border-t border-[#E6EAE5] bg-[#F6F5EF] px-4 py-4 lg:hidden">
             <div className="flex flex-col gap-4 text-sm font-medium">
-              <NavLink to="/" onClick={() => setMenuOpen(false)}>Home</NavLink>
-              <NavLink to="/destination" onClick={() => setMenuOpen(false)}>Explore</NavLink>
-              <NavLink to="/dashboard" onClick={() => setMenuOpen(false)}>Member Portal</NavLink>
+              {publicNavItems.map(({ to, label }) => (
+                <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>{label}</NavLink>
+              ))}
               <NavLink to="/auth/register" onClick={() => setMenuOpen(false)}>Join Leafy</NavLink>
               <NavLink to="/auth/login" onClick={() => setMenuOpen(false)}>Sign in</NavLink>
             </div>
@@ -175,7 +178,9 @@ function AppShell() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutLeafyPage />} />
           <Route path="/destination" element={<DestinationSelection />} />
+          <Route path="/operations" element={<OperationsCentrePage />} />
           <Route path="/auth/:mode" element={<AuthPage />} />
           <Route path="/auth/forgot" element={<ForgotPasswordPage />} />
           <Route path="/auth/reset" element={<PasswordResetPage />} />
@@ -196,6 +201,108 @@ function AppShell() {
         </Routes>
       </AnimatePresence>
     </div>
+  )
+}
+
+function AboutLeafyPage() {
+  return (
+    <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="grid gap-8 overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_40px_80px_rgba(32,41,35,0.06)] lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="p-8 sm:p-10 lg:p-12">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">About Leafy</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One ecosystem for innovation, learning and growth.</h1>
+          <p className="mt-5 text-base leading-8 text-[#6B756E]">Leafy brings agricultural innovators, food founders, learners, investors, mentors and partner organisations into one connected environment. The platform is designed to help people discover opportunities, support ideas and create commercial pathways grounded in real agricultural needs.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <NavLink to="/farms" className="rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white">Explore Farms</NavLink>
+            <NavLink to="/foods" className="rounded-full border border-[#E6EAE5] bg-[#F6F5EF] px-5 py-3 text-sm font-semibold text-[#202923]">Explore Foods</NavLink>
+          </div>
+        </div>
+        <div className="relative min-h-[420px] bg-[#EDF4EA]">
+          <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80" alt="Leafy stakeholders collaborating" className="h-full w-full object-cover" />
+        </div>
+      </section>
+
+      <section className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          { title: 'Agricultural innovation', detail: 'Promote farm-focused innovation, technology adoption and research-backed solutions.' },
+          { title: 'Food systems', detail: 'Support food products, processing, packaging, nutrition and sustainable value chains.' },
+          { title: 'Learning', detail: 'Build knowledge through practical academy pathways, training and mentoring.' },
+          { title: 'Commercialisation', detail: 'Connect innovation to buyers, partners, investors and market opportunities.' },
+        ].map(({ title, detail }) => (
+          <div key={title} className="rounded-[1.5rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_25px_50px_rgba(32,41,35,0.04)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#39845A]">Leafy</p>
+            <h2 className="mt-4 text-2xl font-semibold text-[#202923]">{title}</h2>
+            <p className="mt-3 text-sm leading-7 text-[#6B756E]">{detail}</p>
+          </div>
+        ))}
+      </section>
+    </main>
+  )
+}
+
+function OperationsCentrePage() {
+  const operationsCards = [
+    { title: 'Stakeholder CRM', copy: 'Track innovators, partners, mentors, buyers and programme participants in one shared directory.', status: 'Shared records' },
+    { title: 'Innovation management', copy: 'Review submissions, assign reviewers, track stages from screening through commercialisation.', status: 'Lifecycle view' },
+    { title: 'Incubation programmes', copy: 'Coordinate cohorts, milestones, mentors, applications and programme reporting.', status: 'Programme admin' },
+    { title: 'Investor and partnership management', copy: 'Record introductions, opportunities, follow-ups and stakeholder engagement history.', status: 'Relationships' },
+    { title: 'Academy administration', copy: 'Manage courses, instructors, learner progress, assessments and certificates.', status: 'Learning operations' },
+    { title: 'Physical operations & events', copy: 'Schedule workshops, exhibitions, field learning, meetings and site activity coordination.', status: 'Events & logistics' },
+  ]
+
+  return (
+    <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_40px_80px_rgba(32,41,35,0.06)] sm:p-10">
+        <div className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Leafy operations centre</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">The private operating system behind the Leafy ecosystem.</h1>
+          <p className="mt-5 text-base leading-8 text-[#6B756E]">This internal workspace is designed for Leafy staff to manage stakeholders, track innovation progress, oversee academy delivery and coordinate the physical and digital side of the business in a single, connected operating model.</p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {[
+            { label: 'Registered innovators', value: '128' },
+            { label: 'Active programmes', value: '09' },
+            { label: 'Upcoming events', value: '14' },
+          ].map((item) => (
+            <div key={item.label} className="rounded-[1.5rem] border border-[#E6EAE5] bg-[#F6F5EF] p-5">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#39845A]">{item.label}</p>
+              <p className="mt-3 text-3xl font-semibold text-[#202923]">{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-16">
+        <div className="mb-8 max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Operational functions</p>
+          <h2 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Connected business operations, not disconnected admin screens.</h2>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {operationsCards.map(({ title, copy, status }) => (
+            <article key={title} className="rounded-[1.6rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_25px_50px_rgba(32,41,35,0.04)]">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#39845A]">{status}</p>
+                <div className="h-2.5 w-2.5 rounded-full bg-[#285342]" />
+              </div>
+              <h3 className="mt-5 text-2xl font-semibold text-[#202923]">{title}</h3>
+              <p className="mt-4 text-sm leading-7 text-[#6B756E]">{copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-16 rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-8 sm:p-10">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Working model</p>
+            <h2 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Submission → Screening → Assessment → Incubation → Commercialisation.</h2>
+          </div>
+          <NavLink to="/dashboard" className="inline-flex items-center justify-center rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white">View member portal</NavLink>
+        </div>
+      </section>
+    </main>
   )
 }
 
