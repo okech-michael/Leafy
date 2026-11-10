@@ -390,20 +390,17 @@ function LandingPage() {
 
   return (
     <main className="overflow-x-hidden">
-      <section ref={heroRef} className="relative isolate min-h-screen overflow-hidden border-b border-[#E6EAE5] bg-[#202923] text-white">
+      <section ref={heroRef} className="relative isolate min-h-screen overflow-hidden border-b border-[#E6EAE5] text-white">
         <video
-          className="absolute inset-0 h-full w-full object-cover opacity-50"
+          className="absolute inset-0 h-full w-full object-cover"
           autoPlay
           muted
           loop
           playsInline
           aria-hidden="true"
-          poster="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80"
         >
           <source src={heroVideoSrc} type="video/mp4" />
         </video>
-
-        <div className="absolute inset-0 bg-[#202923]/60" />
 
         <div className="relative mx-auto flex min-h-screen w-full items-center justify-center px-5 py-20 sm:px-8 lg:px-16">
           <div className="hero-copy w-full max-w-[1450px] text-center">
