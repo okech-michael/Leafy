@@ -8,16 +8,14 @@ import {
   ArrowUpRight,
   BookOpen,
   ChevronRight,
-  Globe,
   HeartHandshake,
-  Leaf,
   ShieldCheck,
   Sprout,
   Store,
   UtensilsCrossed,
   Waves,
 } from 'lucide-react'
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { LeafyLogo } from './LeafyLogo'
@@ -94,6 +92,14 @@ const overviewStats = [
   { label: 'Approach', value: 'Production, commerce, learning and community impact' },
 ]
 
+const divisionPaths: Record<string, string> = {
+  academy: '/academy',
+  farms: '/farms',
+  foods: '/foods',
+  foundation: '/foundation',
+  market: '/market',
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -107,7 +113,9 @@ function App() {
 function AppShell() {
   const location = useLocation()
   const isWorkspaceRoute =
-    location.pathname.startsWith('/academy/') ||
+    location.pathname.startsWith('/academy/student') ||
+    location.pathname.startsWith('/academy/learn/') ||
+    location.pathname.startsWith('/academy/assessments/') ||
     /^\/farms\/(dashboard|farm|expert|manage)(\/|$)/.test(location.pathname) ||
     location.pathname.startsWith('/foods/manage') ||
     /^\/foundation\/(manage|participant)(\/|$)/.test(location.pathname) ||
@@ -135,12 +143,9 @@ function AppShell() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/employee" element={<EmployeePortalPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/division/market" element={<Navigate to="/market" replace />} />
-          <Route path="/division/farms" element={<Navigate to="/farms" replace />} />
-          <Route path="/division/:divisionId" element={<DivisionPage />} />
+          <Route path="/division/:divisionId" element={<DivisionRedirect />} />
           <Route path="/foods/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foods…</div>}><FoodsRoutes /></Suspense>} />
           <Route path="/farms/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Farms…</div>}><FarmsRoutes /></Suspense>} />
-          <Route path="/academy" element={<DivisionExperiencePage divisionId="academy" />} />
           <Route path="/academy/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Academy…</div>}><AcademyRoutes /></Suspense>} />
           <Route path="/foundation/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Foundation…</div>}><FoundationRoutes /></Suspense>} />
           <Route path="/market/*" element={<Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-sm text-[#6B756E]">Loading Leafy Market…</div>}><MarketRoutes /></Suspense>} />
@@ -273,7 +278,7 @@ function AdminDashboardPage() {
             <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]"><Icon className="h-5 w-5" /></div>
             <h2 className="text-xl font-semibold text-[#202923]">{name}</h2>
             <p className="mt-3 text-sm leading-6 text-[#6B756E]">{description}</p>
-            <NavLink to={`/division/${id}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">Explore this division <ArrowRight className="h-4 w-4" /></NavLink>
+            <NavLink to={`/${id}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">Explore this division <ArrowRight className="h-4 w-4" /></NavLink>
           </article>
         ))}
       </div>
@@ -463,7 +468,7 @@ function LandingPage() {
                   <p className="mt-2 text-sm font-medium text-[#39845A]">{tag}</p>
                 </div>
                 <p className="text-sm leading-6 text-[#6B756E]">{description}</p>
-                <NavLink to={`/division/${id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">
+                <NavLink to={`/${id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">
                   Explore division <ArrowUpRight className="h-4 w-4" />
                 </NavLink>
               </div>
@@ -633,7 +638,7 @@ function DestinationSelection() {
                 <p className="mt-2 text-sm font-medium text-[#39845A]">{tag}</p>
               </div>
               <p className="text-sm leading-6 text-[#6B756E]">{description}</p>
-              <NavLink to={`/division/${id}`} className="inline-flex items-center rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f4032]">
+              <NavLink to={`/${id}`} className="inline-flex items-center rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1f4032]">
                 Explore {name.split(' ')[1] ?? 'division'}
               </NavLink>
             </div>
@@ -741,182 +746,9 @@ function AuthPage() {
   )
 }
 
-function DivisionPage() {
-  const { divisionId } = useParams()
-  const division = useMemo(() => divisionData.find((item) => item.id === divisionId) ?? divisionData[0], [divisionId])
-  const Icon = division.icon
-
-  return (
-    <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <section className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_30px_60px_rgba(32,41,35,0.06)]">
-        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="relative min-h-[440px]">
-            <img src={division.image} alt={division.name} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#202923]/80 via-[#202923]/40 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-8 text-white sm:p-10">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/15 backdrop-blur-sm">
-                <Icon className="h-6 w-6" />
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Division</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">{division.name}</h1>
-              <p className="mt-4 max-w-lg text-base leading-7 text-[#EBF5ED]">{division.tag}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-center bg-[#F6F5EF] p-8 sm:p-10">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white">
-                <Globe className="h-5 w-5" />
-              </div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#285342]">Leafy ecosystem</p>
-            </div>
-
-            <p className="text-lg leading-8 text-[#6B756E]">{division.description}</p>
-
-            <div className="mt-8 space-y-4">
-              <div className="rounded-2xl border border-[#E6EAE5] bg-white p-4">
-                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Division focus</p>
-                <p className="mt-2 text-base text-[#202923]">{division.tag}</p>
-              </div>
-              <div className="rounded-2xl border border-[#E6EAE5] bg-white p-4">
-                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Connected work</p>
-                <p className="mt-2 text-base text-[#202923]">Leafy’s divisions connect agricultural production and products with learning, commercial relationships and community initiatives.</p>
-              </div>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <NavLink to={`/${division.id}`} className="inline-flex items-center gap-2 rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1f4032]">
-                Open {division.name} <ArrowRight className="h-4 w-4" />
-              </NavLink>
-              <NavLink to="/destination" className="inline-flex items-center gap-2 rounded-full border border-[#E6EAE5] bg-white px-5 py-3 text-sm font-semibold text-[#202923]">
-                More divisions
-              </NavLink>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-16 grid gap-6 md:grid-cols-3">
-        {[
-          { title: 'Agricultural innovation', detail: 'Leafy intends to connect innovators with incubation, funding, validation, technical support and markets; a request and partner-matching process is not yet available.', icon: Sprout },
-          { title: 'Producer-to-market pathways', detail: 'Leafy Farms and Leafy Foods can present eligible products through Leafy Market when listings and supply are confirmed.', icon: Store },
-          { title: 'Learning and community capacity', detail: 'Leafy Academy supports practical skills, while Leafy Foundation coordinates community programmes and participation.', icon: BookOpen },
-        ].map(({ title, detail, icon: Icon }) => (
-          <div key={title} className="rounded-[1.8rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h3 className="text-2xl font-semibold text-[#202923]">{title}</h3>
-            <p className="mt-4 text-sm leading-7 text-[#6B756E]">{detail}</p>
-          </div>
-        ))}
-      </section>
-    </main>
-  )
-}
-
-function DivisionExperiencePage({ divisionId }: { divisionId: string }) {
-  const division = useMemo(() => divisionData.find((item) => item.id === divisionId) ?? divisionData[0], [divisionId])
-  const Icon = division.icon
-
-  const contentByDivision: Record<string, { focus: { title: string; detail: string }[]; connections: { label: string; href: string }[]; gap?: string }> = {
-    foods: {
-      focus: [
-        { title: 'Food products and offerings', detail: 'Present food products, packages and relevant offers from Leafy and participating producers.' },
-        { title: 'Producer and buyer connections', detail: 'Connect food producers with customers, institutions and potential business partners.' },
-        { title: 'Sales and fulfilment', detail: 'Support ordering and fulfilment where Leafy has an active, configured service.' },
-      ],
-      connections: [{ label: 'Explore agricultural and food listings', href: '/market' }, { label: 'See farm production', href: '/farms' }],
-    },
-    farms: {
-      focus: [
-        { title: 'Agricultural production', detail: 'Support farm-based production and relevant records when Leafy directly participates in an operation.' },
-        { title: 'Producer support', detail: 'Offer practical resources and a path to request agricultural assistance.' },
-        { title: 'Routes to market', detail: 'Help eligible farm products reach Leafy Market and potential buyers.' },
-      ],
-      connections: [{ label: 'Build practical skills', href: '/academy/courses' }, { label: 'Explore commercial listings', href: '/market' }],
-    },
-    academy: {
-      focus: [
-        { title: 'Relevant learning', detail: 'Develop knowledge and skills in agriculture, entrepreneurship, innovation and community development.' },
-        { title: 'Practical application', detail: 'Connect learning to the real needs of farmers, producers, innovators and communities.' },
-        { title: 'Learning progress', detail: 'Support learners with course materials, assessments and progress records.' },
-      ],
-      connections: [{ label: 'Explore farm-related learning', href: '/academy/courses' }, { label: 'See community programmes', href: '/foundation' }],
-    },
-    foundation: {
-      focus: [
-        { title: 'Community initiatives', detail: 'Make relevant programmes visible and support participation in initiatives aligned with Leafy’s mission.' },
-        { title: 'Partnership and coordination', detail: 'Coordinate volunteers, partners and participants around clearly defined activities.' },
-        { title: 'Evidence of impact', detail: 'Document programme outcomes using verified records rather than assumed figures.' },
-      ],
-      connections: [{ label: 'Find learning opportunities', href: '/academy' }, { label: 'Explore agricultural work', href: '/farms' }],
-    },
-    market: {
-      focus: [
-        { title: 'Agricultural and food listings', detail: 'Give agricultural producers, food businesses and product owners a place to present relevant offerings.' },
-        { title: 'Commercial connections', detail: 'Help buyers and potential partners discover producers, products and agricultural innovations.' },
-        { title: 'Orders where appropriate', detail: 'Support enquiries, orders and transactions when the commercial service is configured.' },
-      ],
-      connections: [{ label: 'Connect with farm production', href: '/farms' }, { label: 'Explore food products', href: '/foods' }],
-      gap: 'Incubation, funding, technical assistance, mentorship and validation pathways for agricultural innovations are part of Leafy’s intended work, but an intake and partner-matching workflow is not yet available in this prototype.',
-    },
-  }
-
-  const config = contentByDivision[divisionId] ?? contentByDivision.foods
-
-  return (
-    <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <section className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-        <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="relative min-h-[420px]">
-            <img src={division.image} alt={division.name} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#202923]/80 via-[#202923]/45 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-8 text-white sm:p-10">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/15 backdrop-blur-sm">
-                <Icon className="h-6 w-6" />
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Division</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">{division.name}</h1>
-              <p className="mt-4 max-w-lg text-base leading-7 text-[#EBF5ED]">{division.tag}</p>
-            </div>
-          </div>
-
-          <div className="bg-[#F6F5EF] p-8 sm:p-10">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white">
-                <Globe className="h-5 w-5" />
-              </div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#285342]">Purpose and work</p>
-            </div>
-            <p className="text-lg leading-8 text-[#6B756E]">{division.description}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-16 grid gap-6 md:grid-cols-3">
-        {config.focus.map(({ title, detail }) => (
-          <div key={title} className="rounded-[2rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]">
-              <Leaf className="h-5 w-5" />
-            </div>
-            <h2 className="text-2xl font-semibold text-[#202923]">{title}</h2>
-            <p className="mt-4 text-sm leading-7 text-[#6B756E]">{detail}</p>
-          </div>
-        ))}
-      </section>
-
-      <section className="mt-16 rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-8">
-        <h2 className="text-3xl font-semibold text-[#202923]">Connected across Leafy</h2>
-        <div className="mt-6 flex flex-wrap gap-3">
-          {config.connections.map(({ label, href }) => (
-            <NavLink key={href} to={href} className="rounded-full border border-[#dce4dc] bg-white px-4 py-2.5 text-sm font-medium text-[#285342]">{label} <ArrowRight className="ml-1 inline h-4 w-4" /></NavLink>
-          ))}
-        </div>
-        {config.gap && <p className="mt-5 rounded-2xl border border-[#e6eae5] bg-white p-4 text-sm leading-6 text-[#58645d]">{config.gap}</p>}
-      </section>
-    </main>
-  )
+function DivisionRedirect() {
+  const { divisionId = '' } = useParams()
+  return <Navigate to={divisionPaths[divisionId] ?? '/'} replace />
 }
 
 function DashboardPage() {

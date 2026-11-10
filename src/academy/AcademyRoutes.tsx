@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
@@ -66,6 +66,11 @@ const studentLinks = [
 export function AcademyRoutes() {
   const [state, setState] = useState<AcademyState>(() => loadAcademyState())
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const location = useLocation()
+  const isStudentWorkspace =
+    location.pathname.startsWith('/academy/student') ||
+    location.pathname.startsWith('/academy/learn/') ||
+    location.pathname.startsWith('/academy/assessments/')
 
   const updateState = (update: (current: AcademyState) => AcademyState) => {
     setState((current) => {
@@ -77,7 +82,7 @@ export function AcademyRoutes() {
 
   return (
     <div className="min-h-[calc(100vh-72px)] bg-[#F6F5EF]">
-      <header className="border-b border-[#E6EAE5] bg-white">
+      {isStudentWorkspace && <header className="border-b border-[#E6EAE5] bg-white">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/academy/student" aria-label="Leafy Academy dashboard" className="flex items-center gap-3">
             <LeafyLogo className="h-10 w-20" />
@@ -96,12 +101,12 @@ export function AcademyRoutes() {
             </button>
           </div>
         </div>
-      </header>
+      </header>}
 
-      <p role="status" className="mx-auto mt-5 max-w-[1500px] px-4 text-xs leading-5 text-[#6B756E] sm:px-6 lg:px-8">Academy courses, learner details and progress shown here are illustrative browser-prototype data, not live programme or learner records.</p>
+      {isStudentWorkspace && <p role="status" className="mx-auto mt-5 max-w-[1500px] px-4 text-xs leading-5 text-[#6B756E] sm:px-6 lg:px-8">Academy courses, learner details and progress shown here are illustrative browser-prototype data, not live programme or learner records.</p>}
 
-      <div className="mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:px-8">
-        <aside className={`${mobileNavOpen ? 'block' : 'hidden'} h-fit rounded-[1.5rem] border border-[#E6EAE5] bg-white p-3 lg:sticky lg:top-24 lg:block`}>
+      <div className={isStudentWorkspace ? 'mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:px-8' : 'mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8'}>
+        {isStudentWorkspace && <aside className={`${mobileNavOpen ? 'block' : 'hidden'} h-fit rounded-[1.5rem] border border-[#E6EAE5] bg-white p-3 lg:sticky lg:top-24 lg:block`}>
           <nav className="space-y-1">
             {studentLinks.map(({ to, label, icon: Icon, end }) => (
               <NavLink key={to} to={to} end={end} onClick={() => setMobileNavOpen(false)} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isActive ? 'bg-[#285342] text-white' : 'text-[#58645d] hover:bg-[#F0F5EF] hover:text-[#285342]'}`}>
@@ -114,10 +119,11 @@ export function AcademyRoutes() {
             <Link to="/academy" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#58645d] hover:bg-[#F0F5EF]"><ArrowLeft className="h-4 w-4" /> Academy home</Link>
             <Link to="/auth/login" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#58645d] hover:bg-[#F0F5EF]"><LogOut className="h-4 w-4" /> Sign out</Link>
           </div>
-        </aside>
+        </aside>}
 
-        <div className="min-w-0">
+        <div className={isStudentWorkspace ? 'min-w-0' : ''}>
           <Routes>
+            <Route index element={<CourseCatalogue />} />
             <Route path="student" element={<StudentDashboard state={state} />} />
             <Route path="courses" element={<CourseCatalogue />} />
             <Route path="courses/:courseId" element={<CourseDetails state={state} updateState={updateState} />} />
