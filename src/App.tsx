@@ -6,24 +6,15 @@ import heroVideoSrc from './assets/leafy-brand-intro-silent.mp4'
 import {
   ArrowRight,
   ArrowUpRight,
-  BadgeCheck,
-  Bell,
   BookOpen,
-  Briefcase,
-  Building2,
   ChevronRight,
-  CreditCard,
-  FileText,
   Globe,
   HeartHandshake,
   Leaf,
   Menu,
   ShieldCheck,
-  ShoppingBag,
   Sprout,
   Store,
-  TrendingUp,
-  Users,
   UtensilsCrossed,
   Waves,
   X,
@@ -45,8 +36,8 @@ const divisionData = [
   {
     id: 'foods',
     name: 'Leafy Foods',
-    tag: 'Healthy Meals. Made Simple.',
-    description: 'Nourishing food experiences designed around wellness, convenience and better everyday living.',
+    tag: 'Food products and supply partnerships.',
+    description: 'Showcase Leafy food products and connect producers with customers and organisations that need a reliable food supply.',
     image: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80',
     accent: 'from-[#285342] via-[#39845A] to-[#A4C68C]',
     icon: UtensilsCrossed,
@@ -54,8 +45,8 @@ const divisionData = [
   {
     id: 'farms',
     name: 'Leafy Farms',
-    tag: 'Sustainable Farms. Stronger Communities.',
-    description: 'Responsible farming systems that restore soil, support growers and create resilient local food networks.',
+    tag: 'Agricultural production and producer support.',
+    description: 'Support Leafy’s farm-based production and agricultural activities, and connect eligible produce with buyers and partners.',
     image: 'https://images.unsplash.com/photo-1464226184884-fa52ac9fcf7a?auto=format&fit=crop&w=1200&q=80',
     accent: 'from-[#285342] via-[#2e5d46] to-[#A4C68C]',
     icon: Sprout,
@@ -63,8 +54,8 @@ const divisionData = [
   {
     id: 'academy',
     name: 'Leafy Academy',
-    tag: 'Education. Skills. Lifelong Wellness.',
-    description: 'Practical learning and guided growth for people building healthier, more capable futures.',
+    tag: 'Practical learning for agriculture and enterprise.',
+    description: 'Build practical knowledge and skills in agriculture, entrepreneurship, innovation and community development.',
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
     accent: 'from-[#285342] via-[#39845A] to-[#dfeec5]',
     icon: BookOpen,
@@ -72,8 +63,8 @@ const divisionData = [
   {
     id: 'foundation',
     name: 'Leafy Foundation',
-    tag: 'Empowering People. Transforming Lives.',
-    description: 'Community-led initiatives supporting access, inclusion, wellbeing and local opportunity.',
+    tag: 'Community programmes and social impact.',
+    description: 'Coordinate community-led initiatives, participation and partnerships that advance Leafy’s mission.',
     image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80',
     accent: 'from-[#1f3931] via-[#285342] to-[#8eb57b]',
     icon: HeartHandshake,
@@ -81,32 +72,26 @@ const divisionData = [
   {
     id: 'market',
     name: 'Leafy Market',
-    tag: 'Healthy Products. Good for You. Good for the Planet.',
-    description: 'A sustainable marketplace connecting trusted products with environmentally conscious lifestyles.',
+    tag: 'Commercial connections for agriculture.',
+    description: 'Connect agricultural producers, innovators and food businesses with buyers and potential partners.',
     image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80',
     accent: 'from-[#285342] via-[#3d6f51] to-[#d9f1d3]',
     icon: Store,
   },
 ]
 
-const mockStories = [
-  { title: 'A young farmer restoring soil and confidence', detail: 'Sample story: local knowledge, regenerative practice and community learning.' },
-  { title: 'Families choosing healthier routines', detail: 'Sample story: access to fresh meals and practical wellbeing support.' },
-  { title: 'Learners building future-ready skills', detail: 'Sample story: coaching, training and certificates designed for growth.' },
-]
-
 const impactAreas = [
-  'Sustainable agriculture',
-  'Healthy nutrition',
-  'Education and skills development',
-  'Community empowerment',
-  'Responsible consumption',
+  'Agricultural innovation and production',
+  'Commercial connections for producers',
+  'Practical learning and capacity building',
+  'Community programmes and participation',
+  'Food products and supply opportunities',
 ]
 
 const overviewStats = [
-  { label: 'Organisational focus', value: 'Five connected divisions' },
-  { label: 'Audience', value: 'People, partners, learners and growers' },
-  { label: 'Mission', value: 'Healthy living and a restored planet' },
+  { label: 'Purpose', value: 'Connect agricultural ideas to practical opportunity' },
+  { label: 'Stakeholders', value: 'Innovators, producers, organisations and buyers' },
+  { label: 'Approach', value: 'Production, commerce, learning and community impact' },
 ]
 
 function App() {
@@ -141,7 +126,7 @@ function AppShell() {
             </div>
             <div>
               <div className="text-lg font-semibold tracking-tight">Leafy</div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B756E]">Nourishing People</div>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B756E]">Agriculture · commerce · community</div>
             </div>
           </NavLink>
 
@@ -215,74 +200,25 @@ function AppShell() {
 }
 
 function AdminDashboardPage() {
-  const adminMetrics = [
-    { label: 'Total users', value: '12.4k', icon: Users },
-    { label: 'Employees', value: '350', icon: Briefcase },
-    { label: 'Orders', value: '2.8k', icon: ShoppingBag },
-    { label: 'Revenue', value: 'KSh 3.1M', icon: CreditCard },
-  ]
-
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 flex items-center justify-between gap-4">
+      <div className="mb-8">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Owner dashboard</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Organisation control centre</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Organisation overview · prototype</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Leafy’s connected work</h1>
         </div>
-        <button className="rounded-full border border-[#E6EAE5] bg-white px-4 py-2 text-sm font-medium text-[#202923]">Export report</button>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-[#6B756E]">Leafy brings agricultural production, food businesses, commercial connections, practical learning and community programmes together. This preview has no live organisation records or reporting data.</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {adminMetrics.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="rounded-[1.5rem] border border-[#E6EAE5] bg-white p-5 shadow-[0_25px_50px_rgba(32,41,35,0.04)]">
-            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]">
-              <Icon className="h-5 w-5" />
-            </div>
-            <p className="text-sm uppercase tracking-[0.18em] text-[#6B756E]">{label}</p>
-            <p className="mt-4 text-3xl font-semibold text-[#202923]">{value}</p>
-          </div>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {divisionData.map(({ id, name, description, icon: Icon }) => (
+          <article key={id} className="rounded-[1.5rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_25px_50px_rgba(32,41,35,0.04)]">
+            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]"><Icon className="h-5 w-5" /></div>
+            <h2 className="text-xl font-semibold text-[#202923]">{name}</h2>
+            <p className="mt-3 text-sm leading-6 text-[#6B756E]">{description}</p>
+            <NavLink to={`/division/${id}`} className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">Explore this division <ArrowRight className="h-4 w-4" /></NavLink>
+          </article>
         ))}
-      </div>
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-[#202923]">Recent actions</h2>
-            <span className="text-sm text-[#6B756E]">Today</span>
-          </div>
-          <div className="space-y-4">
-            {[
-              'User account reactivated for a Leafy Market member',
-              'Course content updated in Leafy Academy',
-              'Farm resource list refreshed',
-              'Order status updated in Leafy Foods',
-            ].map((item) => (
-              <div key={item} className="flex gap-3 rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] p-4">
-                <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#285342] text-white">
-                  <TrendingUp className="h-4 w-4" />
-                </div>
-                <p className="text-sm leading-6 text-[#202923]">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <aside className="rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-6">
-          <h2 className="text-2xl font-semibold text-[#202923]">Division performance</h2>
-          <div className="mt-6 space-y-5">
-            {divisionData.map(({ name }, index) => (
-              <div key={name}>
-                <div className="mb-2 flex items-center justify-between text-sm text-[#202923]">
-                  <span>{name}</span>
-                  <span>{70 + index * 6}%</span>
-                </div>
-                <div className="h-2.5 rounded-full bg-white/80">
-                  <div className="h-full rounded-full bg-[#285342]" style={{ width: `${70 + index * 6}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
       </div>
     </main>
   )
@@ -293,56 +229,20 @@ function EmployeePortalPage() {
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Employee portal</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Assigned work and operational status</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Staff workspace · preview</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Coordinate work across Leafy</h1>
         </div>
-        <button className="rounded-full bg-[#285342] px-5 py-3 text-sm font-medium text-white">My tasks</button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {[
-          { title: 'Assigned tasks', value: '18', icon: Briefcase },
-          { title: 'Customer enquiries', value: '6', icon: Bell },
-          { title: 'Orders pending', value: '24', icon: ShoppingBag },
-        ].map(({ title, value, icon: Icon }) => (
-          <div key={title} className="rounded-[1.8rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_25px_60px_rgba(32,41,35,0.04)]">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h2 className="text-xl font-semibold text-[#202923]">{title}</h2>
-            <p className="mt-4 text-3xl font-semibold text-[#202923]">{value}</p>
-          </div>
+      <p className="mb-6 max-w-3xl rounded-2xl border border-[#e6eae5] bg-white p-5 text-sm leading-7 text-[#6B756E]">Leafy staff work across agricultural production, food products, producer and buyer connections, practical learning and community initiatives. This page is a workflow preview only: it does not contain real tasks, enquiries, orders or access permissions.</p>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {divisionData.map(({ id, name, description, icon: Icon }) => (
+          <article key={id} className="rounded-[1.5rem] border border-[#E6EAE5] bg-white p-6">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]"><Icon className="h-5 w-5" /></div>
+            <h2 className="text-xl font-semibold text-[#202923]">{name}</h2>
+            <p className="mt-3 text-sm leading-6 text-[#6B756E]">{description}</p>
+          </article>
         ))}
-      </div>
-
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-6">
-          <h2 className="text-2xl font-semibold text-[#202923]">Current queue</h2>
-          <div className="mt-6 space-y-4">
-            {[
-              'Process fresh meal order #2048',
-              'Reply to farm support enquiry',
-              'Update academy learner progress',
-            ].map((task) => (
-              <div key={task} className="flex items-center justify-between rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] p-4">
-                <span className="text-sm leading-6 text-[#202923]">{task}</span>
-                <button className="rounded-full border border-[#E6EAE5] bg-white px-3 py-2 text-xs font-medium text-[#285342]">Update</button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-6">
-          <h2 className="text-2xl font-semibold text-[#202923]">Division access</h2>
-          <div className="mt-6 space-y-4">
-            {['Leafy Foods', 'Leafy Academy', 'Leafy Market'].map((item) => (
-              <div key={item} className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm text-[#202923]">
-                <span>{item}</span>
-                <span className="text-xs font-medium text-[#285342]">Authorised</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </main>
   )
@@ -452,17 +352,17 @@ function LandingPage() {
         <div className="relative mx-auto flex min-h-[90vh] w-full max-w-[1600px] items-center px-5 py-20 sm:px-8 lg:px-16">
           <div className="hero-copy w-full max-w-[1450px]">
             <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1450px] text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl lg:text-7xl">
-              Nourishing People. Restoring Nature. Building a Better Tomorrow.
+              Connecting Agricultural Innovation with People, Markets and Opportunity.
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="mt-6 max-w-4xl text-base leading-7 text-[#F3F7F4]/85 sm:text-lg sm:leading-8">
-              Leafy brings together healthy living, sustainable agriculture, education, community empowerment and responsible commerce to create meaningful impact for people and the planet.
+              Leafy connects agricultural innovators, producers, organisations, institutions, investors and consumers so agricultural ideas and products can become sustainable, commercially viable and impactful.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="mt-8 flex flex-col gap-4 sm:flex-row">
               <NavLink to="/destination" className="inline-flex items-center justify-center rounded-full bg-[#A4C68C] px-6 py-3 font-medium text-[#1B2C24] transition hover:bg-[#bfd9a9]">
                 Explore Leafy <ArrowRight className="ml-2 h-4 w-4" />
               </NavLink>
               <a href="#impact" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/5 px-6 py-3 font-medium text-white transition hover:bg-white/10">
-                Discover Our Impact
+                Explore Leafy’s Work
               </a>
             </motion.div>
           </div>
@@ -477,7 +377,7 @@ function LandingPage() {
         <div className="story-panel grid gap-10 lg:grid-cols-[1.25fr_.75fr] lg:items-center">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Introducing Leafy</p>
-            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One organisation. Five powerful pathways to healthier living.</h2>
+            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One organisation connecting production, commerce, learning and community.</h2>
           </div>
           <div className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_40px_80px_rgba(32,41,35,0.08)]">
             <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80" alt="People collaborating in a community-oriented setting" className="h-[460px] w-full object-cover transition duration-700 hover:scale-105" />
@@ -489,7 +389,7 @@ function LandingPage() {
         <div className="mb-10 flex items-end justify-between gap-3">
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">The Leafy Ecosystem</p>
-            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">A connected system for people and planet.</h2>
+            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Five divisions with connected roles.</h2>
           </div>
         </div>
 
@@ -523,10 +423,10 @@ function LandingPage() {
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end">
             <div>
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Our Mission</p>
-              <h2 className="text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Healthy People. Healthy Communities. Healthy Planet.</h2>
+              <h2 className="text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Agricultural Innovation. Sustainable Opportunity. Community Impact.</h2>
             </div>
             <p className="text-base leading-7 text-[#DCE8E1]">
-              Leafy connects the full cycle of wellbeing — from the soil and food we grow, to the people we educate, the communities we support and the responsible choices we make together.
+              Leafy connects agricultural production and innovation with commercial opportunities, practical learning and community programmes.
             </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -542,8 +442,8 @@ function LandingPage() {
 
       <section id="impact" className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
         <div className="mb-12 max-w-2xl">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Our impact</p>
-          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Built around meaningful, human-centred outcomes.</h2>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Our priorities</p>
+          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Work that links ideas, producers and opportunity.</h2>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -585,20 +485,13 @@ function LandingPage() {
           <div className="mb-12 flex items-center justify-between gap-4">
             <div>
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Featured stories</p>
-              <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Real stories, shaped by learning and care.</h2>
+              <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Stories from Leafy’s agricultural and community work.</h2>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {mockStories.map((story) => (
-              <div key={story.title} className="rounded-[2rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#F0F5EF] text-[#285342]">
-                  <BadgeCheck className="h-5 w-5" />
-                </div>
-                <h3 className="text-2xl font-semibold leading-tight text-[#202923]">{story.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[#6B756E]">{story.detail}</p>
-              </div>
-            ))}
+          <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
+            <h3 className="text-2xl font-semibold leading-tight text-[#202923]">Stories from Leafy’s work will be shared here.</h3>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#6B756E]">No verified organisational stories or outcomes have been provided for publication. This section should feature real, approved accounts from producers, learners, partners and communities when they are available.</p>
           </div>
         </div>
       </section>
@@ -629,7 +522,7 @@ function LandingPage() {
                 <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B756E]">Nourishing People</div>
               </div>
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-[#6B756E]">Building a connected ecosystem for healthy communities, sustainable agriculture and brighter futures.</p>
+            <p className="mt-4 max-w-xs text-sm leading-6 text-[#6B756E]">Connecting agricultural innovation and production with commercial opportunities, practical learning and community impact.</p>
           </div>
 
           <div>
@@ -656,9 +549,8 @@ function LandingPage() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#202923]">Get in touch</h3>
             <ul className="mt-4 space-y-3 text-sm text-[#6B756E]">
-              <li>hello@leafy.org</li>
-              <li>+254 (0) 20 000 0000</li>
-              <li>Community-first, people-driven</li>
+              <li>Official contact details have not been provided.</li>
+              <li>Use verified Leafy contact channels for real enquiries.</li>
             </ul>
           </div>
         </div>
@@ -837,12 +729,12 @@ function DivisionPage() {
 
             <div className="mt-8 space-y-4">
               <div className="rounded-2xl border border-[#E6EAE5] bg-white p-4">
-                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Public experience</p>
-                <p className="mt-2 text-base text-[#202923]">Homepage, storytelling, enquiries and curated information.</p>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Division focus</p>
+                <p className="mt-2 text-base text-[#202923]">{division.tag}</p>
               </div>
               <div className="rounded-2xl border border-[#E6EAE5] bg-white p-4">
-                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Member journey</p>
-                <p className="mt-2 text-base text-[#202923]">Membership, dashboard access, personal activity and cross-division switching.</p>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#39845A]">Connected work</p>
+                <p className="mt-2 text-base text-[#202923]">Leafy’s divisions connect agricultural production and products with learning, commercial relationships and community initiatives.</p>
               </div>
             </div>
 
@@ -860,9 +752,9 @@ function DivisionPage() {
 
       <section className="mt-16 grid gap-6 md:grid-cols-3">
         {[
-          { title: 'Operations', detail: 'Division-specific experience layers, relevant workflows and member journeys.', icon: Building2 },
-          { title: 'Community impact', detail: 'Practical services designed around trust, access and long-term wellbeing.', icon: HeartHandshake },
-          { title: 'Future-ready platform', detail: 'Adaptable architecture for growth, new programmes and digital expansion.', icon: FileText },
+          { title: 'Agricultural innovation', detail: 'Leafy intends to connect innovators with incubation, funding, validation, technical support and markets; a request and partner-matching process is not yet available.', icon: Sprout },
+          { title: 'Producer-to-market pathways', detail: 'Leafy Farms and Leafy Foods can present eligible products through Leafy Market when listings and supply are confirmed.', icon: Store },
+          { title: 'Learning and community capacity', detail: 'Leafy Academy supports practical skills, while Leafy Foundation coordinates community programmes and participation.', icon: BookOpen },
         ].map(({ title, detail, icon: Icon }) => (
           <div key={title} className="rounded-[1.8rem] border border-[#E6EAE5] bg-white p-6 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
             <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#EDF4EA] text-[#285342]">
@@ -881,71 +773,47 @@ function DivisionExperiencePage({ divisionId }: { divisionId: string }) {
   const division = useMemo(() => divisionData.find((item) => item.id === divisionId) ?? divisionData[0], [divisionId])
   const Icon = division.icon
 
-  const contentByDivision: Record<string, { stats: string[]; focus: { title: string; detail: string }[]; operations: { label: string; value: string }[] }> = {
+  const contentByDivision: Record<string, { focus: { title: string; detail: string }[]; connections: { label: string; href: string }[]; gap?: string }> = {
     foods: {
-      stats: ['Meal programmes', 'Order tracking', 'Customer experience'],
       focus: [
-        { title: 'Menu design', detail: 'Healthy meal options with clear nutrition-led choices and order management.' },
-        { title: 'Operational flow', detail: 'Order processing, menu oversight and customer service handling.' },
-        { title: 'Member access', detail: 'Saved meals, account activity, order history and profile management.' },
+        { title: 'Food products and offerings', detail: 'Present food products, packages and relevant offers from Leafy and participating producers.' },
+        { title: 'Producer and buyer connections', detail: 'Connect food producers with customers, institutions and potential business partners.' },
+        { title: 'Sales and fulfilment', detail: 'Support ordering and fulfilment where Leafy has an active, configured service.' },
       ],
-      operations: [
-        { label: 'Meal catalogue', value: '28 signature plans' },
-        { label: 'Order queue', value: '12 active orders' },
-        { label: 'Enquiries', value: '4 pending' },
-      ],
+      connections: [{ label: 'Explore agricultural and food listings', href: '/market' }, { label: 'See farm production', href: '/farms' }],
     },
     farms: {
-      stats: ['Farm records', 'Agri resources', 'Service enquiries'],
       focus: [
-        { title: 'Farm engagement', detail: 'Support for growers with resource tracking and practical programme guidance.' },
-        { title: 'Learning resources', detail: 'Training content focused on sustainable practices, soil and ecosystem health.' },
-        { title: 'Community value', detail: 'Regional support programmes improving resilience and access to better outputs.' },
+        { title: 'Agricultural production', detail: 'Support farm-based production and relevant records when Leafy directly participates in an operation.' },
+        { title: 'Producer support', detail: 'Offer practical resources and a path to request agricultural assistance.' },
+        { title: 'Routes to market', detail: 'Help eligible farm products reach Leafy Market and potential buyers.' },
       ],
-      operations: [
-        { label: 'Active farmers', value: '146 enrolled' },
-        { label: 'Resource library', value: '22 guides' },
-        { label: 'Pending service requests', value: '8' },
-      ],
+      connections: [{ label: 'Build practical skills', href: '/academy/courses' }, { label: 'Explore commercial listings', href: '/market' }],
     },
     academy: {
-      stats: ['Course library', 'Progress tracking', 'Certificates'],
       focus: [
-        { title: 'Learning journeys', detail: 'Clear pathways for personal growth, skills development and practical education.' },
-        { title: 'Curriculum design', detail: 'Course creation, assessment management and learning material upload tools.' },
-        { title: 'Learner dashboard', detail: 'Courses, progress, assignments and notifications in one place.' },
+        { title: 'Relevant learning', detail: 'Develop knowledge and skills in agriculture, entrepreneurship, innovation and community development.' },
+        { title: 'Practical application', detail: 'Connect learning to the real needs of farmers, producers, innovators and communities.' },
+        { title: 'Learning progress', detail: 'Support learners with course materials, assessments and progress records.' },
       ],
-      operations: [
-        { label: 'Courses published', value: '43' },
-        { label: 'Learners active', value: '920' },
-        { label: 'Assessments', value: '15 due' },
-      ],
+      connections: [{ label: 'Explore farm-related learning', href: '/academy/courses' }, { label: 'See community programmes', href: '/foundation' }],
     },
     foundation: {
-      stats: ['Programmes', 'Applications', 'Impact stories'],
       focus: [
-        { title: 'Programme access', detail: 'Support for community programmes, needs-based engagement and outreach operations.' },
-        { title: 'Participant experience', detail: 'Applications, participation records and clear progress tracking.' },
-        { title: 'Impact reporting', detail: 'Demonstrating the outcomes of community and social initiatives with structure and care.' },
+        { title: 'Community initiatives', detail: 'Make relevant programmes visible and support participation in initiatives aligned with Leafy’s mission.' },
+        { title: 'Partnership and coordination', detail: 'Coordinate volunteers, partners and participants around clearly defined activities.' },
+        { title: 'Evidence of impact', detail: 'Document programme outcomes using verified records rather than assumed figures.' },
       ],
-      operations: [
-        { label: 'Open initiatives', value: '7' },
-        { label: 'Applications', value: '31' },
-        { label: 'Volunteers', value: '18 active' },
-      ],
+      connections: [{ label: 'Find learning opportunities', href: '/academy' }, { label: 'Explore agricultural work', href: '/farms' }],
     },
     market: {
-      stats: ['Shopfront', 'Wishlist', 'Checkout'],
       focus: [
-        { title: 'Marketplace curation', detail: 'Premium sustainable categories and product-first discovery experiences.' },
-        { title: 'Customer flow', detail: 'Browse, wishlist, cart, order tracking and account management.' },
-        { title: 'Operational control', detail: 'Inventory, stock tracking, product management and order fulfilment tools.' },
+        { title: 'Agricultural and food listings', detail: 'Give agricultural producers, food businesses and product owners a place to present relevant offerings.' },
+        { title: 'Commercial connections', detail: 'Help buyers and potential partners discover producers, products and agricultural innovations.' },
+        { title: 'Orders where appropriate', detail: 'Support enquiries, orders and transactions when the commercial service is configured.' },
       ],
-      operations: [
-        { label: 'Products live', value: '190' },
-        { label: 'Orders today', value: '74' },
-        { label: 'Inventory alerts', value: '6' },
-      ],
+      connections: [{ label: 'Connect with farm production', href: '/farms' }, { label: 'Explore food products', href: '/foods' }],
+      gap: 'Incubation, funding, technical assistance, mentorship and validation pathways for agricultural innovations are part of Leafy’s intended work, but an intake and partner-matching workflow is not yet available in this prototype.',
     },
   }
 
@@ -973,17 +841,9 @@ function DivisionExperiencePage({ divisionId }: { divisionId: string }) {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#285342] text-white">
                 <Globe className="h-5 w-5" />
               </div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#285342]">Division overview</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#285342]">Purpose and work</p>
             </div>
             <p className="text-lg leading-8 text-[#6B756E]">{division.description}</p>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              {config.stats.map((stat) => (
-                <div key={stat} className="rounded-2xl border border-[#E6EAE5] bg-white p-4 text-center text-sm font-medium text-[#202923]">
-                  {stat}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -1001,23 +861,13 @@ function DivisionExperiencePage({ divisionId }: { divisionId: string }) {
       </section>
 
       <section className="mt-16 rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-[#202923]">Operational snapshot</h2>
-          {divisionId === 'academy' ? (
-            <NavLink to="/academy/student" className="rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white">Student portal</NavLink>
-          ) : (
-            <NavLink to="/dashboard" className="rounded-full bg-[#285342] px-4 py-2 text-sm font-medium text-white">Member portal</NavLink>
-          )}
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-3">
-          {config.operations.map(({ label, value }) => (
-            <div key={label} className="rounded-[1.5rem] border border-[#E6EAE5] bg-white p-5">
-              <p className="text-sm uppercase tracking-[0.18em] text-[#6B756E]">{label}</p>
-              <p className="mt-4 text-2xl font-semibold text-[#202923]">{value}</p>
-            </div>
+        <h2 className="text-3xl font-semibold text-[#202923]">Connected across Leafy</h2>
+        <div className="mt-6 flex flex-wrap gap-3">
+          {config.connections.map(({ label, href }) => (
+            <NavLink key={href} to={href} className="rounded-full border border-[#dce4dc] bg-white px-4 py-2.5 text-sm font-medium text-[#285342]">{label} <ArrowRight className="ml-1 inline h-4 w-4" /></NavLink>
           ))}
         </div>
+        {config.gap && <p className="mt-5 rounded-2xl border border-[#e6eae5] bg-white p-4 text-sm leading-6 text-[#58645d]">{config.gap}</p>}
       </section>
     </main>
   )

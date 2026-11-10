@@ -97,6 +97,8 @@ export function AcademyRoutes() {
         </div>
       </header>
 
+      <p role="status" className="mx-auto mt-5 max-w-[1500px] px-4 text-xs leading-5 text-[#6B756E] sm:px-6 lg:px-8">Academy courses, learner details and progress shown here are illustrative browser-prototype data, not live programme or learner records.</p>
+
       <div className="mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[245px_minmax(0,1fr)] lg:px-8">
         <aside className={`${mobileNavOpen ? 'block' : 'hidden'} h-fit rounded-[1.5rem] border border-[#E6EAE5] bg-white p-3 lg:sticky lg:top-24 lg:block`}>
           <nav className="space-y-1">

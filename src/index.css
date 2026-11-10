@@ -1,16 +1,32 @@
 @import 'tailwindcss';
 
 :root {
+  --brand-primary: #285342;
+  --brand-primary-hover: #1f4032;
+  --brand-secondary: #39845a;
+  --brand-soft: #a4c68c;
+  --background: #f6f5ef;
+  --surface: #ffffff;
+  --surface-elevated: #edf4ea;
+  --text-primary: #202923;
+  --text-secondary: #6b756e;
+  --border: #e6eae5;
+  --success: #2b8a5a;
+  --warning: #c38b2d;
+  --error: #b74d4d;
+  --info: #2a6f97;
+
   font-family: Inter, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #202923;
-  background: #f6f5ef;
+  color: var(--text-primary);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 * {
@@ -24,8 +40,8 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: #f6f5ef;
-  color: #202923;
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 img {
@@ -44,6 +60,10 @@ a {
 button,
 input {
   font: inherit;
+}
+
+::selection {
+  background: rgba(40, 83, 66, 0.12);
 }
 
 @media (prefers-reduced-motion: reduce) {

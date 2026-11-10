@@ -1,6 +1,8 @@
 # Leafy
 
-Leafy is a responsive React frontend for a connected community, learning, agriculture, food and commerce ecosystem. It brings the public Leafy landing site together with dedicated experiences for Leafy Academy, Market, Farms, Foods and Foundation.
+Leafy is intended to connect agricultural innovators, producers, organisations, institutions, investors, consumers and communities so agricultural ideas and products can become sustainable, commercially viable and impactful. Its five divisions have complementary roles: Farms supports agricultural production, Foods develops food products and related business, Market creates commercial connections, Academy builds relevant capacity, and Foundation coordinates community programmes.
+
+This repository contains the frontend prototype for that ecosystem. The divisions are not yet connected to shared production services or operational records.
 
 > **Prototype notice:** Most application data and workflows are local frontend demonstrations, not production services. Do not enter real personal, financial, health, farm or other confidential information. The project does not provide production authentication, authorization, a shared database, or a verified payment integration.
 
@@ -26,6 +28,16 @@ Leafy is a responsive React frontend for a connected community, learning, agricu
 - **Responsive navigation and layouts** for public, customer, learner, farmer and staff-facing screens.
 
 The interface includes demonstrations of complete user journeys, but a visible screen or success message does not imply that a real service, payment or server-side workflow is connected.
+
+## Product purpose and current gaps
+
+The divisions are intended to work together rather than operate as unrelated platforms. For example, eligible produce from a Leafy Farms operation or products from a Leafy Foods business may be presented through Leafy Market; Academy learning can develop relevant skills; Foundation programmes can connect participants with appropriate opportunities.
+
+Agricultural innovation is a central part of Leafy's intended work. The organisation aims to connect innovators with incubation, funding, research and validation, technical assistance, mentorship and routes to market. The current prototype has no intake, assessment or partner-matching workflow for those relationships. That is a key product capability to define and implement in a later phase; the existing marketplace seller application is not a substitute for innovation support.
+
+Farm records are intended to support relevant Leafy production activities, not to make Leafy a generic farm ERP provider. Food ordering is one possible business workflow, not the sole purpose of Leafy Foods. Foundation programme listings and impact reporting must be based on confirmed programmes and verified records.
+
+Sample catalogue entries, seller profiles and learner activity are illustrative. They are not confirmed Leafy suppliers, current offers, real learners, organisational achievements or impact figures. The shared admin and staff screens are workflow previews, not live operational dashboards.
 
 ## Technology
 
