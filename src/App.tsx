@@ -16,7 +16,7 @@ import { Component, lazy, Suspense, useEffect, useState, type ErrorInfo, type Fo
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { HomepageContent } from './HomepageContent'
-import { LeafyLoading, LeafyLoadingProvider } from './LeafyLoading'
+import { LeafyLoading } from './LeafyLoading'
 import { LeafyLogo } from './LeafyLogo'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
@@ -87,9 +87,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <LeafyLoadingProvider>
-          <AppShell />
-        </LeafyLoadingProvider>
+        <AppShell />
       </BrowserRouter>
     </QueryClientProvider>
   )
