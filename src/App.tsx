@@ -1,32 +1,24 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import heroVideoSrc from './assets/leafy-brand-intro-silent.mp4'
 import {
   ArrowRight,
-  ArrowUpRight,
   BookOpen,
-  ChevronRight,
   HeartHandshake,
   ShieldCheck,
   Sprout,
   Store,
   UtensilsCrossed,
-  Waves,
 } from 'lucide-react'
-import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useState, type FormEvent } from 'react'
 import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
-import { LeafyLogo } from './LeafyLogo'
+import { HomepageContent } from './HomepageContent'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
 const FarmsRoutes = lazy(() => import('./farms/FarmsRoutes').then((module) => ({ default: module.FarmsRoutes })))
 const FoodsRoutes = lazy(() => import('./foods/FoodsRoutes').then((module) => ({ default: module.FoodsRoutes })))
 const FoundationRoutes = lazy(() => import('./foundation/FoundationRoutes').then((module) => ({ default: module.FoundationRoutes })))
-
-gsap.registerPlugin(ScrollTrigger)
 
 const queryClient = new QueryClient()
 
@@ -76,20 +68,6 @@ const divisionData = [
     accent: 'from-[#285342] via-[#3d6f51] to-[#d9f1d3]',
     icon: Store,
   },
-]
-
-const impactAreas = [
-  'Agricultural innovation and production',
-  'Commercial connections for producers',
-  'Practical learning and capacity building',
-  'Community programmes and participation',
-  'Food products and supply opportunities',
-]
-
-const overviewStats = [
-  { label: 'Purpose', value: 'Connect agricultural ideas to practical opportunity' },
-  { label: 'Stakeholders', value: 'Innovators, producers, organisations and buyers' },
-  { label: 'Approach', value: 'Production, commerce, learning and community impact' },
 ]
 
 const divisionPaths: Record<string, string> = {
@@ -365,252 +343,7 @@ function EmailVerificationPage() {
 }
 
 function LandingPage() {
-  const heroRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.hero-copy > *',
-        { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 1, stagger: 0.12, ease: 'power3.out' },
-      )
-      gsap.utils.toArray<HTMLElement>('.story-panel').forEach((panel) => {
-        gsap.fromTo(
-          panel,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: panel,
-              start: 'top 80%',
-            },
-          },
-        )
-      })
-    }, heroRef)
-
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <main className="overflow-x-hidden">
-      <section ref={heroRef} className="relative isolate min-h-screen overflow-hidden border-b border-[#E6EAE5] text-white">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-        >
-          <source src={heroVideoSrc} type="video/mp4" />
-        </video>
-
-        <div className="relative mx-auto flex min-h-screen w-full items-center justify-center px-5 py-20 sm:px-8 lg:px-16">
-          <div className="hero-copy w-full max-w-[1450px] text-center">
-            <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mx-auto max-w-[1450px] text-balance text-4xl font-semibold leading-[1] tracking-[-0.055em] sm:text-5xl lg:text-7xl">
-              Connecting Agricultural Innovation with People, Markets and Opportunity.
-            </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="mx-auto mt-6 max-w-4xl text-base leading-7 text-[#F3F7F4]/85 sm:text-lg sm:leading-8">
-              Leafy connects agricultural innovators, producers, organisations, institutions, investors and consumers so agricultural ideas and products can become sustainable, commercially viable and impactful.
-            </motion.p>
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <NavLink to="/destination" className="inline-flex items-center justify-center rounded-full bg-[#A4C68C] px-6 py-3 font-medium text-[#1B2C24] transition hover:bg-[#bfd9a9]">
-                Explore Leafy <ArrowRight className="ml-2 h-4 w-4" />
-              </NavLink>
-              <a href="#impact" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/5 px-6 py-3 font-medium text-white transition hover:bg-white/10">
-                Explore Leafy’s Work
-              </a>
-            </motion.div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-xs uppercase tracking-[0.4em] text-[#E6F3EA]">
-          Scroll
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
-        <div className="story-panel grid gap-10 lg:grid-cols-[1.25fr_.75fr] lg:items-center">
-          <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Introducing Leafy</p>
-            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923] sm:text-5xl">One organisation connecting production, commerce, learning and community.</h2>
-          </div>
-          <div className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white shadow-[0_40px_80px_rgba(32,41,35,0.08)]">
-            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80" alt="People collaborating in a community-oriented setting" className="h-[460px] w-full object-cover transition duration-700 hover:scale-105" />
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 pb-20 sm:px-8 lg:px-16">
-        <div className="mb-10 flex items-end justify-between gap-3">
-          <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">The Leafy Ecosystem</p>
-            <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Five divisions with connected roles.</h2>
-          </div>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
-          {divisionData.map(({ id, name, tag, description, image, accent, icon: Icon }) => (
-            <motion.div key={id} whileHover={{ y: -8 }} className="group overflow-hidden rounded-[1.75rem] border border-[#E6EAE5] bg-white shadow-[0_30px_60px_rgba(32,41,35,0.06)]">
-              <div className={`relative h-60 overflow-hidden bg-gradient-to-br ${accent}`}>
-                <img src={image} alt={name} className="h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#202923]/70 via-transparent to-transparent" />
-                <div className="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-[#285342] shadow-lg">
-                  <Icon className="h-5 w-5" />
-                </div>
-              </div>
-              <div className="space-y-4 p-5">
-                <div>
-                  <h3 className="text-xl font-semibold text-[#202923]">{name}</h3>
-                  <p className="mt-2 text-sm font-medium text-[#39845A]">{tag}</p>
-                </div>
-                <p className="text-sm leading-6 text-[#6B756E]">{description}</p>
-                <NavLink to={`/${id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#285342]">
-                  Explore division <ArrowUpRight className="h-4 w-4" />
-                </NavLink>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-[#202923] py-24 text-white">
-        <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-16">
-          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end">
-            <div>
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Our Mission</p>
-              <h2 className="text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Agricultural Innovation. Sustainable Opportunity. Community Impact.</h2>
-            </div>
-            <p className="text-base leading-7 text-[#DCE8E1]">
-              Leafy connects agricultural production and innovation with commercial opportunities, practical learning and community programmes.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {overviewStats.map((stat) => (
-              <div key={stat.label} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-                <p className="text-sm uppercase tracking-[0.18em] text-[#A4C68C]">{stat.label}</p>
-                <p className="mt-4 text-2xl font-semibold text-white">{stat.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="impact" className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
-        <div className="mb-12 max-w-2xl">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Our priorities</p>
-          <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Work that links ideas, producers and opportunity.</h2>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-            <div className="mb-6 flex items-center gap-3 text-[#285342]">
-              <Waves className="h-5 w-5" />
-              <p className="text-sm font-semibold uppercase tracking-[0.2em]">Priority areas</p>
-            </div>
-            <div className="space-y-4">
-              {impactAreas.map((area) => (
-                <div key={area} className="flex items-center justify-between rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3">
-                  <span className="font-medium text-[#202923]">{area}</span>
-                  <ChevronRight className="h-4 w-4 text-[#39845A]" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-6">
-            <div className="overflow-hidden rounded-[2rem] border border-[#E6EAE5] bg-white p-4 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-              <img src="https://images.unsplash.com/photo-1464226184884-fa52ac9fcf7a?auto=format&fit=crop&w=1000&q=80" alt="Farm field and crops under natural sunlight" className="h-64 w-full rounded-[1.5rem] object-cover" />
-            </div>
-            <div className="rounded-[2rem] border border-[#E6EAE5] bg-[#EDF4EA] p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#285342]">Our approach</p>
-              <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium text-[#202923] sm:text-base">
-                <span>People</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
-                <span>Agriculture</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
-                <span>Education</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
-                <span>Community</span><ArrowRight className="h-4 w-4 text-[#39845A]" />
-                <span>Marketplace</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#F0F5EF] py-24">
-        <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-16">
-          <div className="mb-12 flex items-center justify-between gap-4">
-            <div>
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Featured stories</p>
-              <h2 className="text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Stories from Leafy’s agricultural and community work.</h2>
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.04)]">
-            <h3 className="text-2xl font-semibold leading-tight text-[#202923]">Stories from Leafy’s work will be shared here.</h3>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#6B756E]">No verified organisational stories or outcomes have been provided for publication. This section should feature real, approved accounts from producers, learners, partners and communities when they are available.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 py-24 sm:px-8 lg:px-16">
-        <div className="rounded-[2.5rem] bg-[#285342] px-6 py-10 text-white sm:px-10 lg:px-12">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Take part</p>
-              <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">Be Part of Something That Matters.</h2>
-            </div>
-            <NavLink to="/destination" className="inline-flex items-center justify-center rounded-full bg-[#A4C68C] px-6 py-3 font-medium text-[#1B2C24] transition hover:bg-[#bfd9a9]">
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
-            </NavLink>
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-[#E6EAE5] bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr_1.1fr] lg:px-8">
-          <div>
-            <LeafyLogo className="h-16 w-32" />
-            <p className="mt-4 max-w-xs text-sm leading-6 text-[#6B756E]">Connecting agricultural innovation and production with commercial opportunities, practical learning and community impact.</p>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#202923]">About</h3>
-            <ul className="mt-4 space-y-3 text-sm text-[#6B756E]">
-              <li>Leafy Foods</li>
-              <li>Leafy Farms</li>
-              <li>Leafy Academy</li>
-              <li>Leafy Foundation</li>
-              <li>Leafy Market</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#202923]">Company</h3>
-            <ul className="mt-4 space-y-3 text-sm text-[#6B756E]">
-              <li>About Leafy</li>
-              <li>Contact</li>
-              <li>Privacy policy</li>
-              <li>Terms and conditions</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#202923]">Get in touch</h3>
-            <ul className="mt-4 space-y-3 text-sm text-[#6B756E]">
-              <li>Official contact details have not been provided.</li>
-              <li>Use verified Leafy contact channels for real enquiries.</li>
-            </ul>
-          </div>
-        </div>
-        <div className="border-t border-[#E6EAE5] text-center text-sm text-[#6B756E]">
-          <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">© 2026 Leafy. All rights reserved.</div>
-        </div>
-      </footer>
-    </main>
-  )
+  return <HomepageContent />
 }
 
 function DestinationSelection() {
@@ -672,7 +405,7 @@ function AuthPage() {
           <div className="relative z-10">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#A4C68C]">Shared account access</p>
             <h1 className="mt-6 text-4xl font-semibold tracking-[-0.05em] sm:text-5xl">{isLogin ? 'Welcome back to Leafy.' : 'Join the Leafy community.'}</h1>
-            <p className="mt-5 max-w-md text-base leading-7 text-[#E8F2EA]">Register once and access the services and memberships that matter across the Leafy ecosystem.</p>
+            <p className="mt-5 max-w-md text-base leading-7 text-[#E8F2EA]">{isLogin ? 'This prototype opens a sample learner account after sign-in. Real authentication is not connected.' : 'Account creation is not connected yet. This page is a preview and does not create an account.'}</p>
 
             <div className="mt-8 space-y-4">
               {['Unified member identity', 'Division switching', 'Secure access management'].map((item) => (
@@ -694,6 +427,8 @@ function AuthPage() {
               Register
             </NavLink>
           </div>
+
+          {!isLogin && <p role="status" className="mb-5 rounded-xl border border-[#F3D3AE] bg-[#FFF4E8] p-4 text-sm leading-6 text-[#713D12]">Account registration is a prototype. Do not enter real personal information; submitting will not create or save an account.</p>}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {!isLogin && (
