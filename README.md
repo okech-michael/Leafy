@@ -33,7 +33,7 @@ The interface includes demonstrations of complete user journeys, but a visible s
 
 The divisions are intended to work together rather than operate as unrelated platforms. For example, eligible produce from a Leafy Farms operation or products from a Leafy Foods business may be presented through Leafy Market; Academy learning can develop relevant skills; Foundation programmes can connect participants with appropriate opportunities.
 
-Agricultural innovation is a central part of Leafy's intended work. The organisation aims to connect innovators with incubation, funding, research and validation, technical assistance, mentorship and routes to market. The current prototype has no intake, assessment or partner-matching workflow for those relationships. That is a key product capability to define and implement in a later phase; the existing marketplace seller application is not a substitute for innovation support.
+Agricultural innovation is a central part of Leafy's intended work. The organisation aims to connect innovators with incubation, funding, research and validation, technical assistance, mentorship and routes to market. The frontend prototype is not connected to an intake workflow. The separate `feature/backend` branch now has an initial authenticated innovation draft/submission API, but review, assessment and partner matching are not implemented; the existing marketplace seller application is not a substitute for innovation support.
 
 Farm records are intended to support relevant Leafy production activities, not to make Leafy a generic farm ERP provider. Food ordering is one possible business workflow, not the sole purpose of Leafy Foods. Foundation programme listings and impact reporting must be based on confirmed programmes and verified records.
 
@@ -49,6 +49,7 @@ Sample catalogue entries, seller profiles and learner activity are illustrative.
 - Framer Motion and GSAP
 - Lucide icons
 - Oxlint
+- Backend development on `feature/backend`: Express 5, TypeScript, Supabase Auth/PostgreSQL and Vercel functions (initial phase only)
 
 ## Getting started
 
@@ -113,7 +114,7 @@ The Foods experience has a similar sequence under `/foods/`, including `/foods/c
 
 - Academy, Market, Farms, Foods and Foundation prototype state is persisted in browser `localStorage` under separate keys. It is local to the browser and is not shared across devices or users. Clearing site data removes it.
 - The catalogues, example records, activity histories and role controls are frontend demo data unless a screen explicitly says otherwise.
-- The Farms service includes an API request helper for `/api/farms`; a working backend and API deployment configuration are not included here.
+- Backend development is on the separate `feature/backend` branch. It currently provides the initial `/api/v1` foundation, Supabase Auth endpoints and persistent contact submission; Farms and the other division APIs are not implemented. The backend requires its own Supabase configuration and Vercel deployment. It is not connected to the prototype frontend.
 - Daraja credentials, server-side order validation, verified M-Pesa callbacks, backend payment status, and production payment handling are **not** included. Do not use the payment screens to collect or process real payments.
 - Frontend role selectors and hidden/visible UI controls do not enforce permissions. Any production identity, role, seller, staff or participant access must be checked by a trusted backend on every relevant request.
 - Contact and application forms may display a preview or save demo state locally. They must not be treated as delivered messages or received applications.
@@ -123,6 +124,7 @@ The Foods experience has a similar sequence under `/foods/`, including `/foods/c
 
 ```text
 src/
+  backend/       Separate API project (developed on feature/backend)
   academy/       Academy routes and learner state
   assets/        Static assets, including the landing video
   farms/         Farms routes, browser persistence and state
@@ -140,7 +142,7 @@ The landing video is stored at `src/assets/leafy-brand-intro-silent.mp4` and imp
 
 Before using Leafy with real users or data, the project needs, at minimum:
 
-1. A deployed API and database with validation, migrations, backups and monitoring.
+1. Configure Supabase and separately deploy the initial API on `feature/backend`; implement remaining domain APIs, then establish database backups and production monitoring.
 2. Real authentication, server-enforced authorization and secure session handling.
 3. Server-side order and price calculation, payment-provider integration and verified, idempotent callbacks.
 4. Secure file uploads and storage where documents are supported.
