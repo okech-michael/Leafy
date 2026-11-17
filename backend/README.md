@@ -1,6 +1,6 @@
 # Leafy backend
 
-This directory is the separately deployable JavaScript API for Leafy. The backend uses Express 5, PostgreSQL, and Prisma. Google sign-in is planned as a future authentication provider integration.
+This directory is the separately deployable JavaScript API for Leafy. The backend uses Express 5, PostgreSQL, and Prisma. Google OAuth is wired through the backend callback and uses an HttpOnly refresh cookie; set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and the exact registered `GOOGLE_CALLBACK_URL` to enable it.
 
 ## Current scope
 

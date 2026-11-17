@@ -12,6 +12,23 @@ const environmentSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GOOGLE_CALLBACK_URL: z.string().optional(),
 }).superRefine((config, context) => {
+  const hasGoogleClientId = Boolean(config.GOOGLE_CLIENT_ID?.trim())
+  const hasGoogleClientSecret = Boolean(config.GOOGLE_CLIENT_SECRET?.trim())
+  if (hasGoogleClientId !== hasGoogleClientSecret) {
+    context.addIssue({ code: 'custom', path: ['GOOGLE_CLIENT_ID'], message: 'Set both Google client ID and client secret, or leave both empty.' })
+  }
+  if (config.GOOGLE_CALLBACK_URL) {
+    try {
+      const callbackUrl = new URL(config.GOOGLE_CALLBACK_URL)
+      if (config.NODE_ENV === 'production' && callbackUrl.protocol !== 'https:') {
+        context.addIssue({ code: 'custom', path: ['GOOGLE_CALLBACK_URL'], message: 'Must use HTTPS in production.' })
+      }
+    } catch {
+      context.addIssue({ code: 'custom', path: ['GOOGLE_CALLBACK_URL'], message: 'Must be a valid URL.' })
+    }
+  } else if (config.NODE_ENV === 'production' && hasGoogleClientId) {
+    context.addIssue({ code: 'custom', path: ['GOOGLE_CALLBACK_URL'], message: 'Required when Google authentication is enabled in production.' })
+  }
   if (config.NODE_ENV === 'production') {
     if (!config.APP_ORIGIN) context.addIssue({ code: 'custom', path: ['APP_ORIGIN'], message: 'Required in production.' })
     else if (new URL(config.APP_ORIGIN).protocol !== 'https:') context.addIssue({ code: 'custom', path: ['APP_ORIGIN'], message: 'Must use HTTPS in production.' })
@@ -54,8 +71,8 @@ export function loadConfig(source = process.env) {
     corsAllowedOrigins: [...new Set(origins.split(',').map((origin) => origin.trim()).filter(Boolean).map((origin) => new URL(origin).origin))],
     trustProxyHops: parsed.data.TRUST_PROXY_HOPS,
     logLevel: parsed.data.LOG_LEVEL,
-    googleClientId: parsed.data.GOOGLE_CLIENT_ID || null,
-    googleClientSecret: parsed.data.GOOGLE_CLIENT_SECRET || null,
+    googleClientId: parsed.data.GOOGLE_CLIENT_ID?.trim() || null,
+    googleClientSecret: parsed.data.GOOGLE_CLIENT_SECRET?.trim() || null,
     googleCallbackUrl: parsed.data.GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/v1/auth/google/callback',
   }
 }

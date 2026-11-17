@@ -203,8 +203,8 @@ export function createAuthRouter(config) {
 
   // Google OAuth - start redirect flow
   router.get('/google', (req, res) => {
-    if (!config.googleClientId) {
-      const errorMsg = 'Google authentication is not configured on the backend. Please set GOOGLE_CLIENT_ID in backend/.env'
+    if (!config.googleClientId || !config.googleClientSecret) {
+      const errorMsg = 'Google authentication is not configured on the backend. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in backend/.env'
       return res.redirect(`${config.appOrigin}/auth/login?error=${encodeURIComponent(errorMsg)}`)
     }
 
@@ -311,7 +311,7 @@ export function createAuthRouter(config) {
       }
 
       const profileData = await userInfoRes.json()
-      if (!profileData.sub || !profileData.email) {
+      if (!profileData.sub || !profileData.email || profileData.email_verified !== true) {
         return res.redirect(`${config.appOrigin}/auth/login?error=${encodeURIComponent('Incomplete profile received from Google.')}`)
       }
 
@@ -325,7 +325,7 @@ export function createAuthRouter(config) {
       const sessionResult = await makeSession(user.id)
       res.cookie(REFRESH_COOKIE, sessionResult.refreshToken, cookieOptions(config))
 
-      return res.redirect(`${config.appOrigin}/auth/callback?token=${encodeURIComponent(sessionResult.accessToken)}&returnTo=${encodeURIComponent(returnTo)}`)
+      return res.redirect(`${config.appOrigin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`)
     } catch (err) {
       const msg = err instanceof HttpError ? err.message : 'Google authentication failed.'
       return res.redirect(`${config.appOrigin}/auth/login?error=${encodeURIComponent(msg)}`)
@@ -339,14 +339,23 @@ export function createAuthRouter(config) {
     let sub, email, name, picture
 
     if (input.credential) {
+      if (!config.googleClientId) {
+        throw new HttpError(503, 'Google authentication is not configured on the backend.')
+      }
       const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(input.credential)}`)
       if (!verifyRes.ok) {
         throw new HttpError(401, 'Invalid Google credential token.')
       }
       const tokenInfo = await verifyRes.json()
 
-      if (config.googleClientId && tokenInfo.aud !== config.googleClientId) {
+      if (tokenInfo.aud !== config.googleClientId) {
         throw new HttpError(401, 'Google credential token audience mismatch.')
+      }
+      if (!['accounts.google.com', 'https://accounts.google.com'].includes(tokenInfo.iss) || Number(tokenInfo.exp) <= Math.floor(Date.now() / 1000)) {
+        throw new HttpError(401, 'Google credential token is expired or has an invalid issuer.')
+      }
+      if (tokenInfo.email_verified !== 'true') {
+        throw new HttpError(401, 'Google account email is not verified.')
       }
 
       sub = tokenInfo.sub
@@ -358,6 +367,9 @@ export function createAuthRouter(config) {
         throw new HttpError(500, 'Google OAuth credentials not configured on backend.')
       }
       const redirectUri = input.redirectUri || 'postmessage'
+      if (redirectUri !== 'postmessage' && redirectUri !== config.googleCallbackUrl) {
+        throw new HttpError(400, 'Invalid Google OAuth redirect URI.')
+      }
       const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -380,6 +392,7 @@ export function createAuthRouter(config) {
       })
       if (!userInfoRes.ok) throw new HttpError(401, 'Failed to fetch user profile from Google.')
       const profileData = await userInfoRes.json()
+      if (profileData.email_verified !== true) throw new HttpError(401, 'Google account email is not verified.')
 
       sub = profileData.sub
       email = profileData.email

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { authApi, type PublicUser } from '../lib/api'
 
 type AuthContextValue = {
@@ -7,7 +7,6 @@ type AuthContextValue = {
   ready: boolean
   login: (input: { email: string; password: string }) => Promise<PublicUser>
   loginWithGoogle: (input: { credential?: string; code?: string }) => Promise<PublicUser>
-  setSessionFromToken: (token: string) => Promise<PublicUser>
   register: (input: { name: string; email: string; phone: string; password: string; confirmPassword: string }) => Promise<string>
   logout: () => Promise<void>
   updatePassword: (password: string) => Promise<void>
@@ -19,6 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PublicUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
+  const refreshOnMount = useRef<ReturnType<typeof authApi.refresh> | null>(null)
 
   const applySession = useCallback(async (result: Awaited<ReturnType<typeof authApi.refresh>>) => {
     const current = await authApi.me(result.data.session.accessToken)
@@ -30,9 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true
-    authApi.refresh()
+    refreshOnMount.current ??= authApi.refresh()
+    refreshOnMount.current
       .then((result) => {
-        if (active) applySession(result)
+        if (active) return applySession(result)
       })
       .catch(() => {
         if (active) {
@@ -43,14 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
     return () => { active = false }
   }, [applySession])
-
-  const setSessionFromToken = useCallback(async (token: string) => {
-    const current = await authApi.me(token)
-    setUser(current.data.user)
-    setAccessToken(token)
-    setReady(true)
-    return current.data.user
-  }, [])
 
   const login = useCallback(async (input: { email: string; password: string }) => {
     const result = await authApi.login(input)
@@ -89,8 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [accessToken])
 
   const value = useMemo(
-    () => ({ user, accessToken, ready, login, loginWithGoogle, setSessionFromToken, register, logout, updatePassword }),
-    [user, accessToken, ready, login, loginWithGoogle, setSessionFromToken, register, logout, updatePassword]
+    () => ({ user, accessToken, ready, login, loginWithGoogle, register, logout, updatePassword }),
+    [user, accessToken, ready, login, loginWithGoogle, register, logout, updatePassword]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

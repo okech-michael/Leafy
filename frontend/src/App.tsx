@@ -485,11 +485,10 @@ function DestinationSelection() {
 function OAuthCallbackPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const auth = useAuth()
+  const { ready, user } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const token = searchParams.get('token')
     const err = searchParams.get('error')
     const requestedPath = searchParams.get('returnTo')
     const returnTo = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/dashboard'
@@ -499,19 +498,10 @@ function OAuthCallbackPage() {
       return
     }
 
-    if (!token) {
-      navigate('/auth/login?error=Authentication%20failed%20-%20no%20token%20received.', { replace: true })
-      return
-    }
-
-    auth.setSessionFromToken(token)
-      .then(() => {
-        navigate(returnTo, { replace: true })
-      })
-      .catch((e) => {
-        setError(e instanceof Error ? e.message : 'Could not complete Google sign in.')
-      })
-  }, [searchParams, navigate, auth])
+    if (!ready) return
+    if (user) navigate(returnTo, { replace: true })
+    else setError('Could not complete Google sign in. Please try again.')
+  }, [searchParams, navigate, ready, user])
 
   if (error) {
     return (
