@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "Leafy versioned API",
   "private": true,
-  "main": "dist/src/server.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/src/server.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "node --watch src/server.js",
+    "build": "prisma generate",
+    "start": "node src/server.js",
+    "db:migrate": "prisma migrate deploy",
+    "db:dev": "prisma migrate dev",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -22,7 +23,7 @@
   ],
   "license": "UNLICENSED",
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
+    "@prisma/client": "^6.19.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -33,12 +34,7 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.9",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.3.0",
-    "tsx": "^4.20.5",
-    "typescript": "~5.9.2",
+    "prisma": "^6.19.3",
     "vitest": "^4.1.12"
   }
 }

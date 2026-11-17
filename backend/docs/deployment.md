@@ -2,37 +2,30 @@
 
 ## Local API
 
-1. Use Node.js `>=22.12.0`.
+1. Use Node.js `>=22.12.0` and PostgreSQL.
 2. From `backend/`, install dependencies and copy `.env.example` to `.env`.
-3. Configure the Supabase URL, anonymous key and service-role key in the untracked `.env`.
-4. Apply the ordered SQL migration to a Supabase project.
-5. Run `npm run dev`. The API listens on port `5000` by default.
-6. Check `GET http://localhost:5000/api/v1/health/live` and `/api/v1/health/ready`.
+3. Set `DATABASE_URL` for the target PostgreSQL database.
+4. Run `npm run db:dev` to create/update the local schema.
+5. Run `npm run dev`; the API listens on port `5000` by default.
+6. Check `/api/v1/health/live` and `/api/v1/health/ready`.
 
 ## Vercel
 
-Create a separate Vercel project with `backend/` as its root directory. Configure all environment values in Vercel's encrypted project settings; do not upload `.env`. Use separate Supabase projects and credentials for preview/staging and production. Configure the frontend origin list exactly and set `TRUST_PROXY_HOPS=1` for the Vercel deployment.
-
-The frontend project is independent and continues to use the root `vercel.json`. This backend project has its own Vercel function entry and configuration.
+Create a separate Vercel project with `backend/` as its root directory. Configure environment values in Vercel's encrypted project settings; do not upload `.env`. Use separate databases for preview/staging and production. Apply committed migrations with `npm run db:migrate` as part of release operations.
 
 ## Configuration
 
-Required at startup:
+Required:
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `DATABASE_URL`
 
 Optional:
 
 - `NODE_ENV` (`development`, `test`, `production`)
 - `PORT`
 - `LOG_LEVEL`
+- `APP_ORIGIN`
+- `CORS_ALLOWED_ORIGINS`
+- `TRUST_PROXY_HOPS`
 
-Required for production:
-
-- `APP_ORIGIN` (HTTPS origin only; no path)
-- `CORS_ALLOWED_ORIGINS` (comma-separated exact HTTPS origins; must include `APP_ORIGIN`)
-- `TRUST_PROXY_HOPS` (set to the trusted proxy hop count for the deployment)
-
-Daraja and communications variables are listed in `.env.example` for planning, but those integrations are not enabled by this implementation.
+Production requires HTTPS origins, an allowlist that includes `APP_ORIGIN`, and the correct trusted proxy hop count. Daraja and communications variables are listed in `.env.example` for planning, but those integrations are not enabled.

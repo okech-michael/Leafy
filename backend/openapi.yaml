@@ -22,13 +22,13 @@ paths:
       summary: Check database readiness
       responses:
         "200":
-          description: Supabase profile table is available.
+          description: PostgreSQL is reachable.
         "503":
           description: The database is not ready.
   /auth/register:
     post:
       operationId: register
-      summary: Register with Supabase Auth
+      summary: Register with email and password
       requestBody:
         required: true
         content:
@@ -73,7 +73,7 @@ paths:
   /auth/refresh:
     post:
       operationId: refreshSession
-      summary: Rotate a Supabase Auth session
+      summary: Rotate the current session
       responses:
         "200":
           description: New access token and refresh cookie returned.
@@ -117,7 +117,7 @@ paths:
   /auth/logout:
     post:
       operationId: logout
-      summary: Revoke the current Supabase Auth session
+      summary: Revoke the current session
       security: [{ bearerAuth: [] }]
       responses:
         "204":
@@ -129,7 +129,7 @@ paths:
       security: [{ bearerAuth: [] }]
       responses:
         "200":
-          description: User and RLS-scoped profile returned.
+          description: User and profile returned.
   /contact:
     post:
       operationId: createContactMessage

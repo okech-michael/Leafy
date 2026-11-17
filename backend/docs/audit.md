@@ -29,4 +29,4 @@ The new API uses `/api/v1/`; legacy frontend calls are not silently redirected t
 
 ## Current boundary
 
-The initial implementation adds a typed Express API, Supabase Auth integration, a first Supabase migration, persistent contact submission, database-backed rate limiting, health checks, Vercel function entry, API documentation and focused schema tests. A basic innovation-intake API has since been added. Other product-domain APIs, complete payment processing, secure upload flows, email/SMS delivery and full operational workflows remain future implementation/configuration work and are tracked in `README.md`.
+The initial implementation added a typed Express API, a hosted authentication provider integration, persistent contact submission, database-backed rate limiting, health checks, Vercel function entry and API documentation. The backend has since moved to JavaScript, PostgreSQL and Prisma, with database-backed password sessions. Google OAuth, email recovery delivery, other product-domain APIs, complete payment processing, secure upload flows and full operational workflows remain future work and are tracked in `README.md`.

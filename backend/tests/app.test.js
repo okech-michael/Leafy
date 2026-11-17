@@ -1,19 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import type { Server } from 'node:http'
-
-let server: Server
-let apiOrigin: string
+let server
+let apiOrigin
 
 beforeAll(async () => {
   vi.stubEnv('NODE_ENV', 'test')
   vi.stubEnv('LOG_LEVEL', 'silent')
-  vi.stubEnv('SUPABASE_URL', 'https://leafy-test.supabase.co')
-  vi.stubEnv('SUPABASE_ANON_KEY', 'test-anon-key')
-  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'test-service-role-key')
+  vi.stubEnv('DATABASE_URL', 'postgresql://leafy:secret@localhost:5432/leafy_test')
 
   const { default: app } = await import('../src/app.js')
   server = app.listen(0)
-  await new Promise<void>((resolve) => server.once('listening', resolve))
+  await new Promise((resolve) => server.once('listening', resolve))
   const address = server.address()
   if (!address || typeof address === 'string') throw new Error('The API test server did not bind to a TCP port.')
   apiOrigin = `http://127.0.0.1:${address.port}`
@@ -21,7 +17,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (!server) return
-  await new Promise<void>((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     server.close((error) => error ? reject(error) : resolve())
   })
   vi.unstubAllEnvs()

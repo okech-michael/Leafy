@@ -1,68 +1,33 @@
 # Leafy backend
 
-This directory is the separately deployable backend for Leafy. Development is happening on `feature/backend`; it must not be merged into `main` without an explicit request.
+This directory is the separately deployable JavaScript API for Leafy. The backend uses Express 5, PostgreSQL, and Prisma. Google sign-in is planned as a future authentication provider integration.
 
-## Status
+## Current scope
 
-The initial implementation provides:
+- Express API with `/api/v1` routing, security headers, CORS allowlisting, structured logs, request IDs, bounded JSON requests and consistent errors.
+- PostgreSQL persistence through Prisma for users, profiles, sessions, contact messages, innovations and rate limits.
+- Email/password registration and login with hashed passwords and opaque, rotating database sessions. Password recovery currently returns the non-enumerating response but requires an email provider and token flow before it can complete.
+- Public contact submission, database-backed rate limiting and innovation intake endpoints.
+- Vercel catch-all entry, OpenAPI contract, API/security/deployment docs and JavaScript schema tests.
 
-- Express 5 API in TypeScript with `/api/v1` routing, security headers, CORS allowlisting, structured logs with credential-header redaction, request IDs, bounded JSON requests and consistent errors.
-- Supabase Auth registration, login, refresh, logout, password recovery/update and authenticated profile lookup.
-- A server-only Supabase service client and user-scoped clients that preserve database RLS.
-- Persistent public contact submission and database-backed rate limiting.
-- Initial innovation-intake endpoints for public published listings and authenticated draft create/edit/submit, with owner checks and a guarded submission transition.
-- A Supabase SQL foundation for profiles, permissions, organisations, innovation intake, notifications, private file metadata, audit records, contact messages and rate limits, with RLS and a private Storage bucket.
-- Vercel function entry, OpenAPI contract, API/security/deployment documentation and focused validation tests.
-
-This is **not the complete production backend** requested for the whole Leafy ecosystem. Market/Foods/Farms/Academy/Foundation business APIs, real file-upload flows, role administration, notifications delivery, complete Daraja transactions and production operational procedures have not been implemented. Do not use the project to collect real personal or payment data yet.
+This is not a complete production backend. Google OAuth, email verification/recovery delivery, domain APIs, file uploads, notification delivery, payments and complete operational procedures remain future work. Do not use the project to collect real personal or payment data yet.
 
 ## Local setup
 
-Requirements: Node.js `>=22.12.0` and a Supabase project.
+Requirements: Node.js `>=22.12.0` and PostgreSQL.
 
-```powershell
-Copy-Item .env.example .env
+```sh
+cp .env.example .env
 npm install
-# Set the Supabase variables in .env before starting
+# Set DATABASE_URL to a PostgreSQL database
+npm run db:dev
 npm run dev
 ```
 
-In another terminal:
-
-```powershell
-npm run typecheck
-npm test
-npm run build
-npm audit
-```
-
-The API listens on `http://localhost:5000` by default. Apply `supabase/migrations/202611110001_initial_platform.sql` to a Supabase project before using the ready check or database-backed routes.
+The API listens on `http://localhost:5000` by default. `npm run build` generates the Prisma client. Use `npm run db:migrate` to apply committed migrations in a deployed environment.
 
 ## Deployment
 
-Deploy this directory as its own Vercel project. Keep the frontend deployment separate. Configure Supabase secrets in Vercel environment settings for each environment; never copy real values into `.env.example`, source files, or Git.
+Deploy this directory as its own Vercel project. Configure `DATABASE_URL` in Vercel environment settings and run committed Prisma migrations as part of release operations. Keep database credentials in deployment secrets.
 
-See:
-
-- [API contract](./docs/api.md)
-- [OpenAPI document](./openapi.yaml)
-- [Architecture](./docs/architecture.md)
-- [Database setup](./docs/database.md)
-- [Security notes](./docs/security.md)
-- [Deployment](./docs/deployment.md)
-- [Initial branch audit](./docs/audit.md)
-
-## Implementation phases
-
-| Phase | Status |
-|---|---|
-| 1. Repository audit and architecture | Done for the fetched `feature/backend` branch; see `docs/audit.md`. |
-| 2. Project foundation and initial database migration | Foundation implemented; the full domain schema is not complete. |
-| 3. Authentication, profiles and permissions | Supabase Auth endpoints and profile/RLS foundation implemented; administrative role workflows remain. |
-| 4. Innovation, Farms and Foods APIs | Innovation intake is partially implemented; moderation, partner matching, Farms and Foods APIs are not implemented. |
-| 5. Academy, Foundation and Market APIs | Not implemented. |
-| 6. Orders, inventory and Daraja payments | Not implemented. No payment endpoint or success simulation exists. |
-| 7. Notifications, files and administration | Schema foundation only; no upload, delivery or administration APIs. |
-| 8. Security, tests, docs and deployment | Initial controls/docs/tests/deployment entry implemented; full security and production validation remain. |
-
-The branch can be completed in subsequent commits by implementing domain migrations and APIs in dependency order. A successful build or mocked test is not evidence that Supabase, Vercel, email/SMS or Daraja has been production-configured.
+See [API contract](./docs/api.md), [OpenAPI](./openapi.yaml), [architecture](./docs/architecture.md), [database setup](./docs/database.md), [security notes](./docs/security.md) and [deployment](./docs/deployment.md).
