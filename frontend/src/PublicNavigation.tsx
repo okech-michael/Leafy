@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { ChevronDown, Menu, X } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { LeafyLogo } from './LeafyLogo'
+import { useAuth } from './auth/AuthContext'
 
 const exploreLinks = [
   { to: '/farms', label: 'Leafy Farms', detail: 'Production and producer support' },
@@ -16,6 +17,8 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function PublicNavigation() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const { user, ready, logout } = useAuth()
   const [exploreOpen, setExploreOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false)
@@ -41,6 +44,11 @@ export function PublicNavigation() {
     setExploreOpen(false)
     setMobileOpen(false)
     setMobileExploreOpen(false)
+  }
+
+  const signOut = () => {
+    closeMenus()
+    void logout().catch(() => undefined).then(() => navigate('/'))
   }
 
   const handleEscape = (event: KeyboardEvent<HTMLElement>) => {
@@ -109,12 +117,13 @@ export function PublicNavigation() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-5 xl:flex">
-          <NavLink to="/auth/login" className="whitespace-nowrap text-base font-[550] text-[#53645A] transition-colors hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4">
-            Sign in
-          </NavLink>
-          <NavLink to="/auth/register" className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">
-            Join Leafy
-          </NavLink>
+          {user ? <>
+            <NavLink to="/dashboard" className="whitespace-nowrap text-base font-[550] text-[#53645A] transition-colors hover:text-[#245B45]">{user.metadata.fullName ?? user.email ?? 'My account'}</NavLink>
+            <button type="button" onClick={signOut} className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#DCE4DC] px-5 text-base font-[600] text-[#285342] hover:bg-white">Sign out</button>
+          </> : ready && <>
+            <NavLink to="/auth/login" className="whitespace-nowrap text-base font-[550] text-[#53645A] transition-colors hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-4">Sign in</NavLink>
+            <NavLink to="/auth/register" className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">Join Leafy</NavLink>
+          </>}
         </div>
 
         <button
@@ -156,12 +165,13 @@ export function PublicNavigation() {
             <NavLink to="/destination" onClick={closeMenus} className={navLinkClass}>Opportunities</NavLink>
             <NavLink to="/about" onClick={closeMenus} className={navLinkClass}>About Leafy</NavLink>
             <div className="mt-3 flex items-center gap-3 border-t border-[#E6EAE5] pt-4">
-              <NavLink to="/auth/login" onClick={closeMenus} className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-base font-[550] text-[#53645A] hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45]">
-                Sign in
-              </NavLink>
-              <NavLink to="/auth/register" onClick={closeMenus} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">
-                Join Leafy
-              </NavLink>
+              {user ? <>
+                <NavLink to="/dashboard" onClick={closeMenus} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full px-4 text-base font-[550] text-[#53645A] hover:text-[#245B45]">{user.metadata.fullName ?? 'My account'}</NavLink>
+                <button type="button" onClick={signOut} className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#DCE4DC] px-4 text-sm font-semibold text-[#285342]">Sign out</button>
+              </> : ready && <>
+                <NavLink to="/auth/login" onClick={closeMenus} className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-base font-[550] text-[#53645A] hover:text-[#245B45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45]">Sign in</NavLink>
+                <NavLink to="/auth/register" onClick={closeMenus} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#285342] px-5 text-base font-[600] text-white transition-colors hover:bg-[#1F4032] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B45] focus-visible:ring-offset-2">Join Leafy</NavLink>
+              </>}
             </div>
           </nav>
         </div>

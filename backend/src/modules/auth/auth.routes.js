@@ -15,7 +15,8 @@ const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000
 const ACCESS_TTL_MS = 60 * 60 * 1000
 
 function cookieOptions(config) {
-  return { httpOnly: true, secure: config.nodeEnv === 'production', sameSite: 'lax', path: REFRESH_COOKIE_PATH, maxAge: REFRESH_COOKIE_MAX_AGE }
+  const production = config.nodeEnv === 'production'
+  return { httpOnly: true, secure: production, sameSite: production ? 'none' : 'lax', path: REFRESH_COOKIE_PATH, maxAge: REFRESH_COOKIE_MAX_AGE }
 }
 function hash(value) { return createHash('sha256').update(value).digest('hex') }
 async function hashPassword(password) {

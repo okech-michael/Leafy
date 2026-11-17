@@ -13,11 +13,13 @@ import {
   UsersRound,
 } from 'lucide-react'
 import { Component, lazy, Suspense, useEffect, useState, type ErrorInfo, type FormEvent, type ReactNode } from 'react'
-import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { BrowserRouter, NavLink, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PublicNavigation } from './PublicNavigation'
 import { HomepageContent } from './HomepageContent'
 import { LeafyLoading } from './LeafyLoading'
 import { LeafyLogo } from './LeafyLogo'
+import { AuthProvider, useAuth } from './auth/AuthContext'
+import { authApi } from './lib/api'
 
 const AcademyRoutes = lazy(() => import('./academy/AcademyRoutes').then((module) => ({ default: module.AcademyRoutes })))
 const MarketRoutes = lazy(() => import('./market/MarketRoutes').then((module) => ({ default: module.MarketRoutes })))
@@ -86,16 +88,22 @@ const divisionPaths: Record<string, string> = {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppShell />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppShell />
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
 
 function AppShell() {
   const location = useLocation()
+  const { user, ready } = useAuth()
   const isWorkspaceRoute =
+    location.pathname === '/dashboard' ||
+    location.pathname === '/employee' ||
+    location.pathname === '/admin' ||
     location.pathname.startsWith('/academy/student') ||
     location.pathname.startsWith('/academy/learn/') ||
     location.pathname.startsWith('/academy/assessments/') ||
@@ -109,6 +117,12 @@ function AppShell() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [location.pathname])
+
+  if (isWorkspaceRoute && !ready) return <LeafyLoading />
+  if (isWorkspaceRoute && !user) {
+    const returnTo = `${location.pathname}${location.search}`
+    return <Navigate to={`/auth/login?returnTo=${encodeURIComponent(returnTo)}`} replace />
+  }
 
   return (
     <div className="min-h-screen bg-[#F6F5EF] text-[#202923]">
@@ -325,18 +339,38 @@ function EmployeePortalPage() {
 }
 
 function ForgotPasswordPage() {
+  const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setBusy(true)
+    setError('')
+    setNotice('')
+    try {
+      const data = new FormData(event.currentTarget)
+      const result = await authApi.requestPasswordReset(String(data.get('email') ?? ''))
+      setNotice(result.message)
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Password recovery could not be requested.')
+    } finally {
+      setBusy(false)
+    }
+  }
   return (
     <main className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.06)]">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Account recovery</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Forgot your password?</h1>
-        <p className="mt-4 text-base leading-7 text-[#6B756E]">We’ll send a secure reset link to the email address associated with your Leafy account.</p>
-        <form className="mt-8 space-y-5">
+        <p className="mt-4 text-base leading-7 text-[#6B756E]">Request password recovery for your Leafy account. Recovery email delivery must be configured by the service administrator.</p>
+        <form className="mt-8 space-y-5" onSubmit={submit}>
           <div>
             <label className="mb-2 block text-sm font-medium text-[#202923]">Email address</label>
-            <input className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="you@example.com" />
+            <input name="email" type="email" required className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="you@example.com" />
           </div>
-          <button className="w-full rounded-full bg-[#285342] px-4 py-3 text-sm font-semibold text-white">Send reset link</button>
+          {notice && <p role="status" className="text-sm text-[#285342]">{notice}</p>}
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+          <button disabled={busy} className="w-full rounded-full bg-[#285342] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{busy ? 'Sending…' : 'Request recovery'}</button>
         </form>
       </div>
     </main>
@@ -344,21 +378,50 @@ function ForgotPasswordPage() {
 }
 
 function PasswordResetPage() {
+  const { user, updatePassword } = useAuth()
+  const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const data = new FormData(event.currentTarget)
+    const password = String(data.get('password') ?? '')
+    if (password !== String(data.get('confirmPassword') ?? '')) {
+      setError('Passwords do not match.')
+      return
+    }
+    setBusy(true)
+    setError('')
+    setNotice('')
+    try {
+      await updatePassword(password)
+      setNotice('Your password was updated.')
+      form.reset()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Your password could not be updated.')
+    } finally {
+      setBusy(false)
+    }
+  }
   return (
     <main className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.06)]">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Secure reset</p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Reset your password</h1>
-        <form className="mt-8 space-y-5">
+        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Change your password</h1>
+        {!user && <p className="mt-4 text-sm leading-6 text-[#6B756E]">Sign in to change your password. Password recovery links are not available until email delivery is configured.</p>}
+        <form className="mt-8 space-y-5" onSubmit={submit}>
           <div>
             <label className="mb-2 block text-sm font-medium text-[#202923]">New password</label>
-            <input type="password" className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="••••••••" />
+            <input name="password" type="password" minLength={8} required disabled={!user || busy} className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342] disabled:opacity-60" placeholder="••••••••" />
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-[#202923]">Confirm password</label>
-            <input type="password" className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342]" placeholder="••••••••" />
+            <input name="confirmPassword" type="password" minLength={8} required disabled={!user || busy} className="w-full rounded-2xl border border-[#E6EAE5] bg-[#F6F5EF] px-4 py-3 outline-none transition focus:border-[#285342] disabled:opacity-60" placeholder="••••••••" />
           </div>
-          <button className="w-full rounded-full bg-[#285342] px-4 py-3 text-sm font-semibold text-white">Update password</button>
+          {notice && <p role="status" className="text-sm text-[#285342]">{notice}</p>}
+          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+          {user && <button disabled={busy} className="w-full rounded-full bg-[#285342] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{busy ? 'Updating…' : 'Update password'}</button>}
         </form>
       </div>
     </main>
@@ -371,8 +434,8 @@ function EmailVerificationPage() {
       <div className="rounded-[2rem] border border-[#E6EAE5] bg-white p-8 shadow-[0_30px_60px_rgba(32,41,35,0.06)]">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#39845A]">Email verification</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#202923]">Confirm your email</h1>
-        <p className="mt-4 text-base leading-7 text-[#6B756E]">A confirmation link was sent to your inbox. Once verified, you can access your Leafy account and continue to your selected division.</p>
-        <button className="mt-8 rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white">Verify email</button>
+        <p className="mt-4 text-base leading-7 text-[#6B756E]">Leafy accounts are ready to use after registration. Sign in to continue to your selected division.</p>
+        <NavLink to="/auth/login" className="mt-8 inline-flex rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white">Continue to sign in</NavLink>
       </div>
     </main>
   )
@@ -421,11 +484,14 @@ function DestinationSelection() {
 function AuthPage() {
   const { mode } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const auth = useAuth()
   const [values, setValues] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
   const [touched, setTouched] = useState<Record<string, boolean>>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [authNotice, setAuthNotice] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const currentMode = mode === 'login' || mode === 'register' ? mode : 'login'
   const isLogin = currentMode === 'login'
 
@@ -454,10 +520,21 @@ function AuthPage() {
     setTouched((current) => ({ ...current, [field]: true }))
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setAuthNotice('')
     if (isLogin) {
-      navigate('/academy/student')
+      setSubmitting(true)
+      try {
+        await auth.login({ email: values.email, password: values.password })
+        const requestedPath = searchParams.get('returnTo')
+        const returnTo = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/dashboard'
+        navigate(returnTo, { replace: true })
+      } catch (error) {
+        setAuthNotice(error instanceof Error ? error.message : 'Sign in could not be completed.')
+      } finally {
+        setSubmitting(false)
+      }
       return
     }
     setTouched({ name: true, email: true, phone: true, password: true, confirmPassword: true })
@@ -465,7 +542,15 @@ function AuthPage() {
       setAuthNotice('Review the highlighted fields before continuing.')
       return
     }
-    setAuthNotice('Account creation is not connected yet. No account was created.')
+    setSubmitting(true)
+    try {
+      const message = await auth.register(values)
+      setAuthNotice(message)
+    } catch (error) {
+      setAuthNotice(error instanceof Error ? error.message : 'Account registration could not be completed.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -551,12 +636,6 @@ function AuthPage() {
                 {isLogin ? 'Sign in to continue to your Leafy workspace.' : 'Get started and become part of the Leafy ecosystem.'}
               </p>
             </div>
-
-            {!isLogin && (
-              <p role="status" className="mb-5 rounded-xl border border-[#F3D3AE] bg-[#FFF7EE] px-4 py-3 text-xs leading-5 text-[#713D12]">
-                Account creation is a prototype and is not connected yet. Do not enter real personal information; submitting will not create an account.
-              </p>
-            )}
 
             <form className="space-y-4" noValidate={!isLogin} onSubmit={handleSubmit}>
               {!isLogin && (
@@ -658,18 +737,17 @@ function AuthPage() {
                 />
               )}
 
-              {isLogin && <div className="flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-[#65756D]"><span>Demo sign-in opens a sample learner workspace. Authentication is not connected.</span><NavLink to="/auth/forgot" className="shrink-0 font-semibold text-[#0B3D2E] hover:underline">Forgot password?</NavLink></div>}
-              {!isLogin && authNotice && <p role="alert" className="rounded-xl border border-[#F3D3AE] bg-[#FFF7EE] px-4 py-3 text-sm leading-5 text-[#713D12]">{authNotice}</p>}
-              {isLogin && authNotice && <p role="alert" className="text-sm text-[#713D12]">{authNotice}</p>}
+              {isLogin && <div className="flex flex-wrap items-center justify-between gap-2 text-xs leading-5 text-[#65756D]"><span>Sign in with your Leafy account.</span><NavLink to="/auth/forgot" className="shrink-0 font-semibold text-[#0B3D2E] hover:underline">Forgot password?</NavLink></div>}
+              {authNotice && <p role={authNotice.startsWith('Registration succeeded') ? 'status' : 'alert'} className={`rounded-xl px-4 py-3 text-sm leading-5 ${authNotice.startsWith('Registration succeeded') ? 'border border-[#B8D7BE] bg-[#EDF7EF] text-[#285342]' : 'border border-[#F3D3AE] bg-[#FFF7EE] text-[#713D12]'}`}>{authNotice}</p>}
 
               <button
                 type="submit"
-                disabled={!isLogin && !isRegistrationValid}
+                disabled={submitting || (!isLogin && !isRegistrationValid)}
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0B3D2E] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#164f3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2EBB57] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#9AA9A1] disabled:text-white"
               >
-                {isLogin ? 'Sign in to account' : 'Create account'} <ArrowRight className="h-4 w-4" />
+                {submitting ? 'Please wait…' : isLogin ? 'Sign in to account' : 'Create account'} <ArrowRight className="h-4 w-4" />
               </button>
-              {!isLogin && <p className="text-center text-[11px] leading-5 text-[#65756D]">By continuing, you confirm that the information you enter is yours to share. Registration is currently a non-functional prototype.</p>}
+              {!isLogin && <p className="text-center text-[11px] leading-5 text-[#65756D]">By continuing, you confirm that the information you enter is yours to share.</p>}
 
               <div className="border-t border-[#E3EAE3] pt-4 text-center text-sm text-[#4B5E56]">
                 {isLogin ? 'New to Leafy?' : 'Already a member?'}{' '}

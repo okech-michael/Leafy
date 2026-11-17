@@ -43,6 +43,7 @@ import {
   type Lesson,
 } from './academyStore'
 import { LeafyLogo } from '../LeafyLogo'
+import { useAuth } from '../auth/AuthContext'
 
 const buttonClass = 'inline-flex items-center justify-center gap-2 rounded-full bg-[#285342] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1f4032] disabled:cursor-not-allowed disabled:opacity-50'
 const secondaryButtonClass = 'inline-flex items-center justify-center gap-2 rounded-full border border-[#E6EAE5] bg-white px-4 py-2.5 text-sm font-medium text-[#285342] transition hover:border-[#285342]'
@@ -66,6 +67,8 @@ const studentLinks = [
 export function AcademyRoutes() {
   const [state, setState] = useState<AcademyState>(() => loadAcademyState())
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const { logout } = useAuth()
+  const navigate = useNavigate()
   const location = useLocation()
   const isStudentWorkspace =
     location.pathname.startsWith('/academy/student') ||
@@ -117,7 +120,7 @@ export function AcademyRoutes() {
           </nav>
           <div className="mt-4 border-t border-[#E6EAE5] pt-3">
             <Link to="/academy" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#58645d] hover:bg-[#F0F5EF]"><ArrowLeft className="h-4 w-4" /> Academy home</Link>
-            <Link to="/auth/login" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#58645d] hover:bg-[#F0F5EF]"><LogOut className="h-4 w-4" /> Sign out</Link>
+            <button type="button" onClick={() => { void logout().catch(() => undefined).then(() => navigate('/auth/login')) }} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#58645d] hover:bg-[#F0F5EF]"><LogOut className="h-4 w-4" /> Sign out</button>
           </div>
         </aside>}
 
