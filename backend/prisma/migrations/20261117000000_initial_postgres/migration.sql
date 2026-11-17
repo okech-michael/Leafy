@@ -5,6 +5,7 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
+    "google_id" TEXT,
     "password_hash" TEXT,
     "email_verified_at" TIMESTAMPTZ(6),
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -17,6 +18,7 @@ CREATE TABLE "profiles" (
     "id" UUID NOT NULL,
     "full_name" TEXT NOT NULL,
     "phone" TEXT,
+    "avatar_url" TEXT,
     "status" TEXT NOT NULL DEFAULT 'active',
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -79,6 +81,9 @@ CREATE TABLE "rate_limit_buckets" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_google_id_key" ON "users"("google_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sessions_access_token_hash_key" ON "sessions"("access_token_hash");

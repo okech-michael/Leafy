@@ -6,6 +6,8 @@ type AuthContextValue = {
   accessToken: string | null
   ready: boolean
   login: (input: { email: string; password: string }) => Promise<PublicUser>
+  loginWithGoogle: (input: { credential?: string; code?: string }) => Promise<PublicUser>
+  setSessionFromToken: (token: string) => Promise<PublicUser>
   register: (input: { name: string; email: string; phone: string; password: string; confirmPassword: string }) => Promise<string>
   logout: () => Promise<void>
   updatePassword: (password: string) => Promise<void>
@@ -42,8 +44,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => { active = false }
   }, [applySession])
 
+  const setSessionFromToken = useCallback(async (token: string) => {
+    const current = await authApi.me(token)
+    setUser(current.data.user)
+    setAccessToken(token)
+    setReady(true)
+    return current.data.user
+  }, [])
+
   const login = useCallback(async (input: { email: string; password: string }) => {
     const result = await authApi.login(input)
+    const current = await authApi.me(result.data.session.accessToken)
+    setUser(current.data.user)
+    setAccessToken(result.data.session.accessToken)
+    return current.data.user
+  }, [])
+
+  const loginWithGoogle = useCallback(async (input: { credential?: string; code?: string }) => {
+    const result = await authApi.google(input)
     const current = await authApi.me(result.data.session.accessToken)
     setUser(current.data.user)
     setAccessToken(result.data.session.accessToken)
@@ -70,7 +88,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await authApi.updatePassword(accessToken, password)
   }, [accessToken])
 
-  const value = useMemo(() => ({ user, accessToken, ready, login, register, logout, updatePassword }), [user, accessToken, ready, login, register, logout, updatePassword])
+  const value = useMemo(
+    () => ({ user, accessToken, ready, login, loginWithGoogle, setSessionFromToken, register, logout, updatePassword }),
+    [user, accessToken, ready, login, loginWithGoogle, setSessionFromToken, register, logout, updatePassword]
+  )
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

@@ -8,4 +8,3 @@ export class HttpError extends Error {
         this.name = 'HttpError';
     }
 }
-//# sourceMappingURL=errors.js.map

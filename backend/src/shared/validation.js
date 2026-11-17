@@ -9,4 +9,3 @@ export function parseBody(schema, body) {
     }
     return result.data;
 }
-//# sourceMappingURL=validation.js.map

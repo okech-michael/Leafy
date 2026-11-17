@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loginSchema, registerSchema } from '../src/modules/auth/auth.schemas.js'
+import { googleAuthSchema, loginSchema, registerSchema } from '../src/modules/auth/auth.schemas.js'
 
 describe('authentication request schemas', () => {
   it('normalizes registration email and trims identity fields', () => {
@@ -29,5 +29,11 @@ describe('authentication request schemas', () => {
 
   it('rejects invalid login email addresses', () => {
     expect(loginSchema.safeParse({ email: 'invalid', password: 'password' }).success).toBe(false)
+  })
+
+  it('validates google auth inputs', () => {
+    expect(googleAuthSchema.safeParse({ credential: 'token-abc' }).success).toBe(true)
+    expect(googleAuthSchema.safeParse({ code: 'auth-code-123' }).success).toBe(true)
+    expect(googleAuthSchema.safeParse({}).success).toBe(false)
   })
 })

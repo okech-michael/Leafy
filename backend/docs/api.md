@@ -28,6 +28,9 @@ Successful responses use a `data` field where applicable. Errors use:
 |---|---|---|---|---|
 | POST | `/auth/register` | Public, rate-limited | `{ "name", "email", "phone", "password", "confirmPassword" }` | `202`; creates the account. |
 | POST | `/auth/login` | Public, rate-limited | `{ "email", "password" }` | `200`; user and access token. Refresh token is an HTTP-only cookie. |
+| GET | `/auth/google` | Public | Query: `returnTo` | `302`; redirects to Google OAuth consent screen. |
+| GET | `/auth/google/callback` | Public | Query: `code`, `state` | `302`; sets refresh cookie, redirects to frontend `/auth/callback?token=...`. |
+| POST | `/auth/google` | Public, rate-limited | `{ "credential" }` or `{ "code" }` | `200`; user and access token. Refresh token is an HTTP-only cookie. |
 | POST | `/auth/refresh` | Refresh cookie, rate-limited | No body required. A refresh-token body is accepted for non-cookie clients. | `200`; rotated access token and refresh cookie. |
 | POST | `/auth/password-reset` | Public, rate-limited | `{ "email" }` | `202`; non-enumerating recovery response. |
 | POST | `/auth/password` | Bearer token | `{ "password" }` | `204`; changes the current user's password. |

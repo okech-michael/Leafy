@@ -8,6 +8,9 @@ const environmentSchema = z.object({
   CORS_ALLOWED_ORIGINS: z.string().optional(),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_CALLBACK_URL: z.string().optional(),
 }).superRefine((config, context) => {
   if (config.NODE_ENV === 'production') {
     if (!config.APP_ORIGIN) context.addIssue({ code: 'custom', path: ['APP_ORIGIN'], message: 'Required in production.' })
@@ -51,5 +54,8 @@ export function loadConfig(source = process.env) {
     corsAllowedOrigins: [...new Set(origins.split(',').map((origin) => origin.trim()).filter(Boolean).map((origin) => new URL(origin).origin))],
     trustProxyHops: parsed.data.TRUST_PROXY_HOPS,
     logLevel: parsed.data.LOG_LEVEL,
+    googleClientId: parsed.data.GOOGLE_CLIENT_ID || null,
+    googleClientSecret: parsed.data.GOOGLE_CLIENT_SECRET || null,
+    googleCallbackUrl: parsed.data.GOOGLE_CALLBACK_URL || 'http://localhost:5000/api/v1/auth/google/callback',
   }
 }

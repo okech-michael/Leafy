@@ -16,4 +16,3 @@ function stop(signal) {
 }
 process.once('SIGINT', () => stop('SIGINT'));
 process.once('SIGTERM', () => stop('SIGTERM'));
-//# sourceMappingURL=server.js.map

@@ -52,7 +52,7 @@ export type PublicUser = {
   email: string | null
   emailVerified: boolean
   createdAt: string
-  metadata: { fullName: string | null; phone: string | null }
+  metadata: { fullName: string | null; phone: string | null; avatarUrl?: string | null }
 }
 
 export type PublicSession = {
@@ -71,6 +71,12 @@ export const authApi = {
   },
   login(input: { email: string; password: string }) {
     return apiRequest<SessionResponse>('/auth/login', { method: 'POST', body: JSON.stringify(input) })
+  },
+  google(input: { credential?: string; code?: string }) {
+    return apiRequest<SessionResponse>('/auth/google', { method: 'POST', body: JSON.stringify(input) })
+  },
+  getGoogleOAuthUrl(returnTo = '/dashboard') {
+    return `${API_BASE_URL}/auth/google?returnTo=${encodeURIComponent(returnTo)}`
   },
   refresh() {
     return apiRequest<SessionResponse>('/auth/refresh', { method: 'POST' })
