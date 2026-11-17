@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { foundationId, loadFoundationState, saveFoundationState } from './foundationService'
 import { LeafyLogo } from '../LeafyLogo'
+import { contactApi } from '../lib/api'
 import {
   foundationFocusAreas, type ApplicationStatus, type FoundationImpactIndicator,
   type FoundationProgramme, type FoundationRole, type FoundationState,
@@ -297,12 +298,32 @@ function PartnershipSection() {
 
 function ContactPage() {
   const [sent, setSent] = useState(false)
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setSent(true)
+    setBusy(true)
+    setSent(false)
+    setError('')
+    const form = event.currentTarget
+    const data = new FormData(form)
+    try {
+      await contactApi.submit({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        topic: String(data.get('topic') ?? 'General question') as 'General question' | 'Volunteering' | 'Partnership' | 'Community initiative' | 'Story consent',
+        message: String(data.get('message') ?? ''),
+      })
+      setSent(true)
+      form.reset()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Your message could not be sent.')
+    } finally {
+      setBusy(false)
+    }
   }
   return <FoundationPage eyebrow="Contact" title="Start a conversation." intro="Share a question, an idea or the kind of support you would like to offer.">
-    <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr]"><aside className="rounded-[1.5rem] bg-[#24483b] p-7 text-white"><h2 className="font-serif text-3xl">We begin by listening.</h2><p className="mt-4 leading-7 text-white/75">Call <a className="font-semibold text-white underline underline-offset-2" href="tel:+254746593987">0746 593 987</a> or email <a className="font-semibold text-white underline underline-offset-2" href="mailto:info@leafyinnovations.com">info@leafyinnovations.com</a>. The form below is a prototype and will not send a message.</p><div className="mt-7 flex gap-3 text-sm text-white/80"><CircleHelp className="h-5 w-5 shrink-0" />For a response, contact Leafy directly by phone or email.</div></aside><form onSubmit={submit} className={`${panel} grid gap-4 sm:grid-cols-2`}><FormField label="Your name" name="name" required /><FormField label="Email address" name="email" type="email" required /><label className="text-sm sm:col-span-2">What would you like to discuss?<select className={inputClass}><option>General question</option><option>Volunteering</option><option>Partnership</option><option>Community initiative</option><option>Story consent</option></select></label><label className="text-sm sm:col-span-2">Message<textarea required rows={6} className={inputClass} /></label>{sent && <p role="status" className="text-sm text-[#405d47] sm:col-span-2">Your message has not been sent or saved; a verified contact service is not configured.</p>}<button className={`${button} sm:col-span-2`}>Preview message (not sent) <ArrowRight className="h-4 w-4" /></button></form></div>
+    <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr]"><aside className="rounded-[1.5rem] bg-[#24483b] p-7 text-white"><h2 className="font-serif text-3xl">We begin by listening.</h2><p className="mt-4 leading-7 text-white/75">Call <a className="font-semibold text-white underline underline-offset-2" href="tel:+254746593987">0746 593 987</a> or email <a className="font-semibold text-white underline underline-offset-2" href="mailto:info@leafyinnovations.com">info@leafyinnovations.com</a>. Send a message directly to the Leafy team.</p><div className="mt-7 flex gap-3 text-sm text-white/80"><CircleHelp className="h-5 w-5 shrink-0" />We’ll keep a record of your enquiry.</div></aside><form onSubmit={submit} className={`${panel} grid gap-4 sm:grid-cols-2`}><FormField label="Your name" name="name" required /><FormField label="Email address" name="email" type="email" required /><label className="text-sm sm:col-span-2">What would you like to discuss?<select name="topic" className={inputClass}><option>General question</option><option>Volunteering</option><option>Partnership</option><option>Community initiative</option><option>Story consent</option></select></label><label className="text-sm sm:col-span-2">Message<textarea name="message" required rows={6} className={inputClass} /></label>{sent && <p role="status" className="text-sm text-[#405d47] sm:col-span-2">Your message was sent to Leafy.</p>}{error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}<button disabled={busy} className={`${button} sm:col-span-2`}>{busy ? 'Sending…' : 'Send message'} <ArrowRight className="h-4 w-4" /></button></form></div>
   </FoundationPage>
 }
 

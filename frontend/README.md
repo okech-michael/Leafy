@@ -2,9 +2,9 @@
 
 Leafy is intended to connect agricultural innovators, producers, organisations, institutions, investors, consumers and communities so agricultural ideas and products can become sustainable, commercially viable and impactful. Its five divisions have complementary roles: Farms supports agricultural production, Foods develops food products and related business, Market creates commercial connections, Academy builds relevant capacity, and Foundation coordinates community programmes.
 
-This repository contains the frontend prototype for that ecosystem. The divisions are not yet connected to shared production services or operational records.
+This repository contains the Leafy frontend. Its account forms and Foundation contact form connect to the sibling Express backend; most division records and workflows remain browser-only prototypes.
 
-> **Prototype notice:** Most application data and workflows are local frontend demonstrations, not production services. Do not enter real personal, financial, health, farm or other confidential information. The project does not provide production authentication, authorization, a shared database, or a verified payment integration.
+> **Prototype notice:** Backend authentication and contact storage are connected, but most application data and workflows remain local demonstrations. Do not enter real financial, health, farm or other confidential information. The project does not provide production authorization across division features or a verified payment integration.
 
 ## Contents
 
@@ -19,7 +19,7 @@ This repository contains the frontend prototype for that ecosystem. The division
 
 ## Features
 
-- **Leafy landing site:** Responsive homepage, division directory, account screens and the silent brand-introduction video background.
+- **Leafy landing site:** Responsive homepage, division directory, connected registration/login, account recovery requests, and the silent brand-introduction video background.
 - **Leafy Academy:** Course catalogue and learning views, lessons, assessments, assignments, progress, certificates, notifications, learner profile and settings.
 - **Leafy Market:** Product and seller browsing, product details, wishlist, cart, checkout, payment status, order history, customer account, seller workspace and marketplace operations screens.
 - **Leafy Farms:** Public information and resources, farmer onboarding, farm and crop records, seasons, activity calendar, inputs, harvests, livestock, finances, expert requests, produce drafts, reports and workspace previews.
@@ -33,7 +33,7 @@ The interface includes demonstrations of complete user journeys, but a visible s
 
 The divisions are intended to work together rather than operate as unrelated platforms. For example, eligible produce from a Leafy Farms operation or products from a Leafy Foods business may be presented through Leafy Market; Academy learning can develop relevant skills; Foundation programmes can connect participants with appropriate opportunities.
 
-Agricultural innovation is a central part of Leafy's intended work. The organisation aims to connect innovators with incubation, funding, research and validation, technical assistance, mentorship and routes to market. The current prototype has no intake, assessment or partner-matching workflow for those relationships. That is a key product capability to define and implement in a later phase; the existing marketplace seller application is not a substitute for innovation support.
+Agricultural innovation is a central part of Leafy's intended work. The organisation aims to connect innovators with incubation, funding, research and validation, technical assistance, mentorship and routes to market. The backend has an authenticated innovation draft/submission API and the frontend API client exposes those endpoints; a dedicated innovation intake screen, review, assessment and partner matching are not implemented.
 
 Farm records are intended to support relevant Leafy production activities, not to make Leafy a generic farm ERP provider. Food ordering is one possible business workflow, not the sole purpose of Leafy Foods. Foundation programme listings and impact reporting must be based on confirmed programmes and verified records.
 
@@ -49,6 +49,7 @@ Sample catalogue entries, seller profiles and learner activity are illustrative.
 - Framer Motion and GSAP
 - Lucide icons
 - Oxlint
+- Backend: Express 5, JavaScript, PostgreSQL and Prisma; opaque database sessions for email/password auth
 
 ## Getting started
 
@@ -113,16 +114,17 @@ The Foods experience has a similar sequence under `/foods/`, including `/foods/c
 
 - Academy, Market, Farms, Foods and Foundation prototype state is persisted in browser `localStorage` under separate keys. It is local to the browser and is not shared across devices or users. Clearing site data removes it.
 - The catalogues, example records, activity histories and role controls are frontend demo data unless a screen explicitly says otherwise.
-- The Farms service includes an API request helper for `/api/farms`; a working backend and API deployment configuration are not included here.
+- The sibling `backend/` project provides `/api/v1` health, auth, contact and innovation endpoints. The auth and contact flows are connected to the frontend. Configure `VITE_API_BASE_URL` and the backend CORS allowlist for the deployed origins. Farms, Foods, Market, Academy and Foundation domain APIs are not implemented.
 - Daraja credentials, server-side order validation, verified M-Pesa callbacks, backend payment status, and production payment handling are **not** included. Do not use the payment screens to collect or process real payments.
 - Frontend role selectors and hidden/visible UI controls do not enforce permissions. Any production identity, role, seller, staff or participant access must be checked by a trusted backend on every relevant request.
-- Contact and application forms may display a preview or save demo state locally. They must not be treated as delivered messages or received applications.
+- The Foundation contact form sends to the backend. Other application and enquiry forms may still save demo state locally and must not be treated as delivered submissions.
 - Keep secrets in a secure server-side secret store. Never add credentials to React code, `.env` files committed to Git, or browser storage.
 
 ## Project structure
 
 ```text
 src/
+  backend/       Separate API project (developed on feature/backend)
   academy/       Academy routes and learner state
   assets/        Static assets, including the landing video
   farms/         Farms routes, browser persistence and state
@@ -140,12 +142,17 @@ The landing video is stored at `src/assets/leafy-brand-intro-silent.mp4` and imp
 
 Before using Leafy with real users or data, the project needs, at minimum:
 
-1. A deployed API and database with validation, migrations, backups and monitoring.
-2. Real authentication, server-enforced authorization and secure session handling.
-3. Server-side order and price calculation, payment-provider integration and verified, idempotent callbacks.
-4. Secure file uploads and storage where documents are supported.
-5. Approved privacy notices, terms, retention policies, customer support details and operational procedures.
-6. Verification of catalogue details, programme information, contact information and any published impact claims.
-7. Automated tests for the critical user journeys and backend security boundaries.
+1. Deploy the backend and PostgreSQL database, configure `VITE_API_BASE_URL` and CORS, then establish backups and monitoring.
+2. Add Google sign-in and a working password-recovery email flow; implement server-side roles and authorization for division features.
+3. Implement remaining domain APIs, server-side order and price calculation, payment-provider integration and verified callbacks.
+4. Add secure file uploads and storage where documents are supported.
+5. Approve privacy notices, terms, retention policies, customer support details and operational procedures.
+6. Verify catalogue details, programme information, contact information and published impact claims.
+7. Add automated tests for critical user journeys and backend security boundaries.
 
 Until these are supplied and validated, treat this repository as a frontend prototype.
+# Frontend
+
+The app calls the Leafy backend through `VITE_API_BASE_URL`. Copy `.env.example` to `.env` for local development; Vite proxies `/api/v1` to `http://localhost:5000` by default. Set `VITE_API_PROXY_TARGET` to override that local backend URL.
+
+For production builds, configure `VITE_API_BASE_URL` to the deployed backend API base URL (ending in `/api/v1`). Configure the backend's `CORS_ALLOWED_ORIGINS` with the exact frontend origin so credentialed refresh-cookie requests are accepted.
